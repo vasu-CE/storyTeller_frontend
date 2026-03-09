@@ -1,5 +1,6 @@
 
 import './App.css'
+import { Button } from './components/ui/button'
 
 function App() {
 
@@ -8,6 +9,9 @@ function App() {
       <div>
         Hello
       </div>
+      <Button>
+        Hy
+      </Button>
     </>
   )
 }
