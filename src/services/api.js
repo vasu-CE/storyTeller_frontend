@@ -1,6 +1,20 @@
 import axios from 'axios'
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
+export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
+
+function getApiUrl(path) {
+  if (/^https?:\/\//.test(API_BASE_URL)) {
+    return `${API_BASE_URL}${path}`
+  }
+
+  return `${window.location.origin}${API_BASE_URL}${path}`
+}
+
+export function getAnalyzeStreamUrl(repoUrl) {
+  const url = new URL(getApiUrl('/analyze-stream'))
+  url.searchParams.set('repoUrl', repoUrl)
+  return url.toString()
+}
 
 export const repoSummaryClient = {
   /**
@@ -10,7 +24,7 @@ export const repoSummaryClient = {
    */
   fetchSummary: async (repoUrl) => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/analyze`, { repoUrl })
+      const response = await axios.post(getApiUrl('/analyze'), { repoUrl })
       return response.data
     } catch (error) {
       const message =
@@ -25,7 +39,7 @@ export const repoSummaryClient = {
    */
   checkHealth: async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/health`)
+      const response = await axios.get(getApiUrl('/health'))
       return response.data
     } catch (error) {
       return { status: 'error', message: error.message }
