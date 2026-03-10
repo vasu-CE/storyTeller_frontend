@@ -1,27 +1,39 @@
 import { Calendar, GitCommit, Smile, Meh, Frown, AlertCircle } from 'lucide-react'
 
 const moodConfig = {
-  positive: { color: 'text-green-600', bg: 'bg-green-50', border: 'border-green-200', icon: Smile },
-  neutral: { color: 'text-gray-600', bg: 'bg-gray-50', border: 'border-gray-200', icon: Meh },
-  negative: { color: 'text-orange-600', bg: 'bg-orange-50', border: 'border-orange-200', icon: Frown },
-  challenging: { color: 'text-red-600', bg: 'bg-red-50', border: 'border-red-200', icon: AlertCircle },
+  positive: {
+    color: 'text-[#00c896]',
+    icon: Smile
+  },
+  neutral: {
+    color: 'text-[#7b8099]',
+    icon: Meh
+  },
+  negative: {
+    color: 'text-[#00c896]',
+    icon: Frown
+  },
+  challenging: {
+    color: 'text-[#6c63ff]',
+    icon: AlertCircle
+  },
 }
 
 function Timeline({ phases }) {
   if (!phases || phases.length === 0) {
-    return <div className="text-gray-500">No timeline data available</div>
+    return <div className="text-[#6f768d] dark:text-[#7b8099]">No timeline data available</div>
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="flex items-center gap-2 mb-4">
-        <Calendar className="h-5 w-5 text-blue-600" />
-        <h2 className="text-2xl font-bold text-gray-900">Development Timeline</h2>
+        <Calendar className="h-5 w-5 text-[#6c63ff]" />
+        <h2 className="text-[22px] font-semibold text-[#191c26] dark:text-[#eaeaf0]">Development Timeline</h2>
       </div>
 
       <div className="relative">
         {/* Timeline Line */}
-        <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-linear-to-b from-blue-200 via-blue-300 to-blue-200" />
+        <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-[#d8deea] dark:bg-[#2e3142]" />
 
         {/* Phases */}
         <div className="space-y-8">
@@ -34,26 +46,25 @@ function Timeline({ phases }) {
               <div key={index} className="relative pl-16">
                 {/* Timeline Dot */}
                 <div className="absolute left-4 flex items-center justify-center">
-                  <div className={`w-5 h-5 rounded-full ${config.bg} border-2 ${config.border} flex items-center justify-center`}>
-                    <div className="w-2 h-2 rounded-full bg-blue-600" />
-                  </div>
+                  <div className="h-2.5 w-2.5 rounded-full border-2 border-[#f5f7fb] bg-[#6c63ff] dark:border-[#0f1117]" />
+                </div>
+
+                <div className="mb-2 text-[11px] text-[#6f768d] dark:text-[#7b8099]">
+                  {phase.period || 'Unknown Period'}
                 </div>
 
                 {/* Phase Card */}
-                <div className={`rounded-xl border ${config.border} ${config.bg} p-5 transition hover:shadow-md`}>
+                <div className="rounded-[10px] border border-[#d8deea] bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.08)] dark:border-[#2e3142] dark:bg-[#1a1d27] dark:shadow-[0_1px_3px_rgba(0,0,0,0.4)]">
                   {/* Header */}
-                  <div className="flex items-start justify-between mb-3">
+                  <div className="mb-3 flex items-start justify-between">
                     <div className="flex-1">
-                      <h3 className="text-lg font-bold text-gray-900 mb-1">
+                      <h3 className="mb-1 text-lg font-semibold text-[#191c26] dark:text-[#eaeaf0]">
                         {phase.phase_name || `Phase ${index + 1}`}
                       </h3>
-                      {phase.period && (
-                        <p className="text-sm text-gray-600">{phase.period}</p>
-                      )}
                     </div>
-                    <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full ${config.bg} border ${config.border}`}>
+                    <div className="flex items-center gap-1.5 rounded-md border border-[#d8deea] bg-[#eef1f7] px-3 py-1 dark:border-[#2e3142] dark:bg-[#252836]">
                       <MoodIcon className={`h-4 w-4 ${config.color}`} />
-                      <span className={`text-xs font-semibold ${config.color} capitalize`}>
+                      <span className={`text-xs font-medium ${config.color} capitalize`}>
                         {mood}
                       </span>
                     </div>
@@ -61,17 +72,17 @@ function Timeline({ phases }) {
 
                   {/* Summary */}
                   {phase.summary && (
-                    <p className="text-gray-700 leading-relaxed mb-3">{phase.summary}</p>
+                    <p className="mb-3 text-[#6f768d] dark:text-[#9aa0b8]">{phase.summary}</p>
                   )}
 
                   {/* Key Activities */}
                   {phase.key_activities && phase.key_activities.length > 0 && (
                     <div>
-                      <p className="text-sm font-semibold text-gray-900 mb-2">Key Activities:</p>
+                      <p className="mb-2 text-sm font-medium text-[#191c26] dark:text-[#eaeaf0]">Key Activities:</p>
                       <ul className="space-y-1">
                         {phase.key_activities.map((activity, i) => (
-                          <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
-                            <GitCommit className="h-4 w-4 text-blue-500 flex-shrink-0 mt-0.5" />
+                          <li key={i} className="flex items-start gap-2 text-sm text-[#6f768d] dark:text-[#9aa0b8]">
+                            <GitCommit className="mt-0.5 h-4 w-4 shrink-0 text-[#6c63ff]" />
                             <span>{activity}</span>
                           </li>
                         ))}

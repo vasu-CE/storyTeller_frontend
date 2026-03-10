@@ -32,54 +32,61 @@ function ResultPage() {
   const { narrative, phases, milestones, contributors } = data
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 via-blue-50 to-slate-100 px-4 py-12">
+    <div className="min-h-screen bg-[#f5f7fb] px-4 pb-12 pt-6 text-[#6f768d] dark:bg-[#0f1117] dark:text-[#9aa0b8]">
       <div className="mx-auto max-w-6xl">
         {/* Header */}
         <div className="mb-6">
-          <Button
-            variant="ghost"
-            onClick={() => navigate('/')}
-            className="mb-4"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Analyze Another Repository
-          </Button>
+          <div className="mb-4 flex flex-wrap items-center gap-2">
+            <Button
+              variant="ghost"
+              onClick={() => navigate('/')}
+              className="rounded-lg border border-[#d8deea] bg-white px-4 py-2 text-[#191c26] hover:bg-[#f0f3fa] dark:border-[#2e3142] dark:bg-[#1a1d27] dark:text-[#eaeaf0] dark:hover:bg-[#21242f]"
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Analyze Another Repository
+            </Button>
+          </div>
 
-          <div className="rounded-2xl border border-slate-200 bg-white/90 shadow-xl backdrop-blur p-6">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Repository Story
-            </h1>
-            <p className="text-gray-600 text-sm break-all">{repoUrl}</p>
+          <div className="rounded-xl border border-[#d8deea] bg-white p-6 shadow-[0_1px_3px_rgba(0,0,0,0.08)] dark:border-[#2e3142] dark:bg-[#1a1d27] dark:shadow-[0_1px_3px_rgba(0,0,0,0.4)]">
+            <h1 className="mb-2 text-3xl font-bold text-[#191c26] dark:text-[#eaeaf0]">Repository Story</h1>
+            <p className="break-all text-sm text-[#6f768d] dark:text-[#7b8099]">{repoUrl}</p>
           </div>
         </div>
 
         {/* Tabs */}
-        <div className="mb-6">
-          <div className="flex gap-2 overflow-x-auto border-b border-slate-200 bg-white rounded-t-2xl p-2">
-            {tabs.map(({ id, label, icon: Icon }) => (
+        <div className="sticky top-0 z-50 mb-6 border-b border-[#d8deea] bg-[#f5f7fb] py-2 dark:border-[#2e3142] dark:bg-[#0f1117]">
+          <div className="flex gap-2 overflow-x-auto">
+            {tabs.map((tab) => (
               <button
-                key={id}
-                onClick={() => setActiveTab(id)}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition whitespace-nowrap ${
-                  activeTab === id
-                    ? 'bg-blue-600 text-white shadow'
-                    : 'text-gray-600 hover:bg-gray-100'
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center gap-2 whitespace-nowrap rounded-lg border px-4 py-2 text-sm font-medium transition ${
+                  activeTab === tab.id
+                    ? 'border-[#6c63ff] bg-[#6c63ff] text-white'
+                    : 'border-transparent bg-transparent text-[#6f768d] hover:border-[#d8deea] hover:bg-white hover:text-[#191c26] dark:text-[#7b8099] dark:hover:border-[#2e3142] dark:hover:bg-[#1a1d27] dark:hover:text-[#eaeaf0]'
                 }`}
               >
-                <Icon className="h-4 w-4" />
-                {label}
+                <tab.icon className="h-4 w-4" />
+                {tab.label}
               </button>
             ))}
           </div>
         </div>
 
         {/* Content */}
-        <div className="rounded-2xl border border-slate-200 bg-white/90 shadow-xl backdrop-blur p-8">
-          {activeTab === 'narrative' && <NarrativePanel narrative={narrative} />}
+        <div className="rounded-xl border border-[#d8deea] bg-white p-8 shadow-[0_1px_3px_rgba(0,0,0,0.08)] dark:border-[#2e3142] dark:bg-[#1a1d27] dark:shadow-[0_1px_3px_rgba(0,0,0,0.4)]">
+          {activeTab === 'narrative' && (
+            <NarrativePanel
+              narrative={narrative}
+              repository={data.repository}
+              contributors={contributors}
+              phases={phases}
+            />
+          )}
           {activeTab === 'timeline' && <Timeline phases={phases} />}
           {activeTab === 'milestones' && <MilestoneList milestones={milestones} />}
           {activeTab === 'contributors' && <ContributorPanel contributors={contributors} />}
-          {activeTab === 'analytics' && <AnalyticsPanel data={data} />}
+          {activeTab === 'analytics' && <AnalyticsPanel data={data} compact />}
         </div>
       </div>
     </div>

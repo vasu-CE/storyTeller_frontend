@@ -1,12 +1,12 @@
-import { BarChart3, PieChart, Activity, GitBranch } from 'lucide-react'
+import { BarChart3, PieChart, Activity, GitBranch, TrendingUp } from 'lucide-react'
 
 function toNumber(value) {
   return typeof value === 'number' && Number.isFinite(value) ? value : 0
 }
 
-function AnalyticsPanel({ data }) {
+function AnalyticsPanel({ data, compact = false }) {
   if (!data) {
-    return <div className="text-gray-500">No analytics data available</div>
+    return <div className="text-[#6f768d] dark:text-[#7b8099]">No analytics data available</div>
   }
 
   const phases = Array.isArray(data.phases) ? data.phases : []
@@ -25,6 +25,7 @@ function AnalyticsPanel({ data }) {
     .sort((a, b) => b.count - a.count)
 
   const maxTypeCount = Math.max(...commitTypeRows.map((item) => item.count), 1)
+  const totalClassified = commitTypeRows.reduce((sum, item) => sum + item.count, 0)
 
   const phaseRows = phases.map((phase, index) => ({
     label: phase.phase_name || `Phase ${index + 1}`,
@@ -46,46 +47,95 @@ function AnalyticsPanel({ data }) {
     .map(([type, count]) => ({ type, count }))
     .sort((a, b) => b.count - a.count)
 
+  const donutPalette = ['#6c63ff', '#00c896', '#8b84ff', '#4dcfaf', '#a2a7c0', '#7b8099']
+  const donutData = commitTypeRows.slice(0, 6).map((item, index) => ({
+    ...item,
+    color: donutPalette[index % donutPalette.length],
+  }))
+
+  const radius = 66
+  const circumference = 2 * Math.PI * radius
+  let runningOffset = 0
+  const donutSegments = donutData.map((item) => {
+    const ratio = totalClassified > 0 ? item.count / totalClassified : 0
+    const segment = {
+      ...item,
+      dash: `${ratio * circumference} ${circumference}`,
+      offset: -runningOffset,
+      percent: ratio * 100,
+    }
+    runningOffset += ratio * circumference
+    return segment
+  })
+
+  const statCards = [
+    {
+      label: 'Total Commits',
+      value: toNumber(classification.total || data.repository?.totalCommits).toLocaleString(),
+    },
+    {
+      label: 'Unique Contributors',
+      value: contributors.length,
+    },
+    {
+      label: 'Phases Tracked',
+      value: phases.length,
+    },
+    {
+      label: 'Milestones',
+      value: milestones.length,
+    },
+  ]
+
   return (
     <div className="space-y-8">
-      <div className="grid gap-4 md:grid-cols-4">
-        <div className="rounded-xl border border-blue-200 bg-blue-50 p-4">
-          <p className="text-xs font-semibold uppercase text-blue-900">Total Commits</p>
-          <p className="mt-1 text-3xl font-bold text-blue-700">{toNumber(classification.total || data.repository?.totalCommits).toLocaleString()}</p>
-        </div>
-        <div className="rounded-xl border border-green-200 bg-green-50 p-4">
-          <p className="text-xs font-semibold uppercase text-green-900">Unique Contributors</p>
-          <p className="mt-1 text-3xl font-bold text-green-700">{contributors.length}</p>
-        </div>
-        <div className="rounded-xl border border-purple-200 bg-purple-50 p-4">
-          <p className="text-xs font-semibold uppercase text-purple-900">Phases</p>
-          <p className="mt-1 text-3xl font-bold text-purple-700">{phases.length}</p>
-        </div>
-        <div className="rounded-xl border border-orange-200 bg-orange-50 p-4">
-          <p className="text-xs font-semibold uppercase text-orange-900">Milestones</p>
-          <p className="mt-1 text-3xl font-bold text-orange-700">{milestones.length}</p>
+      <div className="rounded-xl border border-[#d8deea] bg-white p-6 shadow-[0_1px_3px_rgba(0,0,0,0.08)] dark:border-[#2e3142] dark:bg-[#1a1d27] dark:shadow-[0_1px_3px_rgba(0,0,0,0.4)]">
+        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#6f768d] dark:text-[#7b8099]">
+          {compact ? 'Analytics Snapshot' : 'Graph Summary'}
+        </p>
+        <div className="mt-2 flex items-end justify-between gap-4">
+          <div>
+            <h2 className="text-3xl font-semibold text-[#191c26] dark:text-[#eaeaf0]">{toNumber(classification.total || data.repository?.totalCommits)}%</h2>
+            <p className="text-sm text-[#6f768d] dark:text-[#7b8099]">Repository Health Index</p>
+          </div>
+          <div className="rounded-md border border-[#d8deea] bg-[#eef1f7] px-3 py-1 text-xs font-semibold text-[#00c896] dark:border-[#2e3142] dark:bg-[#252836]">
+            Good
+          </div>
         </div>
       </div>
 
-      <section className="rounded-2xl border border-slate-200 bg-white p-6">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {statCards.map((card) => (
+          <div
+            key={card.label}
+            className="rounded-xl border border-[#d8deea] bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.08)] dark:border-[#2e3142] dark:bg-[#1a1d27] dark:shadow-[0_1px_3px_rgba(0,0,0,0.4)]"
+          >
+            <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-[#6f768d] dark:text-[#7b8099]">{card.label}</p>
+            <p className="mt-2 text-2xl font-semibold text-[#191c26] dark:text-[#eaeaf0]">{card.value}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="grid gap-6 xl:grid-cols-2">
+      <section className="rounded-xl border border-[#d8deea] bg-white p-6 shadow-[0_1px_3px_rgba(0,0,0,0.08)] dark:border-[#2e3142] dark:bg-[#1a1d27] dark:shadow-[0_1px_3px_rgba(0,0,0,0.4)]">
         <div className="mb-4 flex items-center gap-2">
-          <BarChart3 className="h-5 w-5 text-blue-600" />
-          <h2 className="text-xl font-bold text-gray-900">Commit Type Distribution</h2>
+          <BarChart3 className="h-5 w-5 text-[#6c63ff]" />
+          <h2 className="text-[22px] font-semibold text-[#191c26] dark:text-[#eaeaf0]">Commit Type Distribution</h2>
         </div>
 
         {commitTypeRows.length === 0 ? (
-          <p className="text-gray-500">No commit classification data available</p>
+          <p className="text-[#6f768d] dark:text-[#7b8099]">No commit classification data available</p>
         ) : (
           <div className="space-y-3">
             {commitTypeRows.map((item) => (
               <div key={item.type}>
                 <div className="mb-1 flex items-center justify-between text-sm">
-                  <span className="font-medium text-gray-700 uppercase">{item.type}</span>
-                  <span className="font-semibold text-gray-900">{item.count}</span>
+                  <span className="font-medium uppercase text-[#6f768d] dark:text-[#9aa0b8]">{item.type}</span>
+                  <span className="font-semibold text-[#191c26] dark:text-[#eaeaf0]">{item.count}</span>
                 </div>
-                <div className="h-2 rounded-full bg-gray-100">
+                <div className="h-2 rounded-full bg-[#eef1f7] dark:bg-[#252836]">
                   <div
-                    className="h-full rounded-full bg-linear-to-r from-blue-500 to-cyan-500"
+                    className="h-full rounded-full bg-[#6c63ff]"
                     style={{ width: `${(item.count / maxTypeCount) * 100}%` }}
                   />
                 </div>
@@ -95,29 +145,79 @@ function AnalyticsPanel({ data }) {
         )}
       </section>
 
-      <section className="rounded-2xl border border-slate-200 bg-white p-6">
+      <section className="rounded-xl border border-[#d8deea] bg-white p-6 shadow-[0_1px_3px_rgba(0,0,0,0.08)] dark:border-[#2e3142] dark:bg-[#1a1d27] dark:shadow-[0_1px_3px_rgba(0,0,0,0.4)]">
         <div className="mb-4 flex items-center gap-2">
-          <Activity className="h-5 w-5 text-purple-600" />
-          <h2 className="text-xl font-bold text-gray-900">Phase Activity</h2>
+          <PieChart className="h-5 w-5 text-[#6c63ff]" />
+          <h2 className="text-[22px] font-semibold text-[#191c26] dark:text-[#eaeaf0]">Commit Mix Pie Chart</h2>
+        </div>
+
+        {donutSegments.length === 0 ? (
+          <p className="text-[#6f768d] dark:text-[#7b8099]">No commit classification data available</p>
+        ) : (
+          <div className="grid gap-4 sm:grid-cols-[220px_1fr] sm:items-center">
+            <div className="relative mx-auto h-45 w-45">
+              <svg viewBox="0 0 180 180" className="h-full w-full -rotate-90">
+                <circle cx="90" cy="90" r={radius} fill="none" stroke="#d8deea" strokeWidth="18" className="dark:stroke-[#2e3142]" />
+                {donutSegments.map((segment) => (
+                  <circle
+                    key={segment.type}
+                    cx="90"
+                    cy="90"
+                    r={radius}
+                    fill="none"
+                    stroke={segment.color}
+                    strokeWidth="18"
+                    strokeDasharray={segment.dash}
+                    strokeDashoffset={segment.offset}
+                    strokeLinecap="butt"
+                  />
+                ))}
+              </svg>
+              <div className="absolute inset-0 grid place-items-center text-center">
+                <p className="text-3xl font-semibold text-[#191c26] dark:text-[#eaeaf0]">{totalClassified}</p>
+                <p className="text-[11px] uppercase tracking-[0.12em] text-[#6f768d] dark:text-[#7b8099]">Classified</p>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              {donutSegments.map((segment) => (
+                <div key={segment.type} className="flex items-center justify-between rounded-lg border border-[#d8deea] bg-[#f0f3fa] px-3 py-2 dark:border-[#2e3142] dark:bg-[#252836]">
+                  <div className="flex items-center gap-2">
+                    <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: segment.color }} />
+                    <span className="text-sm font-semibold uppercase text-[#191c26] dark:text-[#eaeaf0]">{segment.type}</span>
+                  </div>
+                  <span className="text-sm font-semibold text-[#191c26] dark:text-[#eaeaf0]">{segment.percent.toFixed(1)}%</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </section>
+      </div>
+
+      <section className="rounded-xl border border-[#d8deea] bg-white p-6 shadow-[0_1px_3px_rgba(0,0,0,0.08)] dark:border-[#2e3142] dark:bg-[#1a1d27] dark:shadow-[0_1px_3px_rgba(0,0,0,0.4)]">
+        <div className="mb-4 flex items-center gap-2">
+          <Activity className="h-5 w-5 text-[#6c63ff]" />
+          <h2 className="text-[22px] font-semibold text-[#191c26] dark:text-[#eaeaf0]">Phase Activity</h2>
         </div>
 
         {phaseRows.length === 0 ? (
-          <p className="text-gray-500">No phase data available</p>
+          <p className="text-[#6f768d] dark:text-[#7b8099]">No phase data available</p>
         ) : (
           <div className="space-y-3">
             {phaseRows.map((phase, index) => (
               <div key={`${phase.label}-${index}`}>
                 <div className="mb-1 flex items-center justify-between text-sm">
-                  <span className="font-medium text-gray-700">{phase.label}</span>
-                  <span className="font-semibold text-gray-900">{phase.commits} commits</span>
+                  <span className="font-medium text-[#6f768d] dark:text-[#9aa0b8]">{phase.label}</span>
+                  <span className="font-semibold text-[#191c26] dark:text-[#eaeaf0]">{phase.commits} commits</span>
                 </div>
-                <div className="h-2 rounded-full bg-gray-100">
+                <div className="h-3 rounded-full bg-[#eef1f7] dark:bg-[#252836]">
                   <div
-                    className="h-full rounded-full bg-linear-to-r from-purple-500 to-fuchsia-500"
+                    className="h-full rounded-full bg-[#6c63ff]"
                     style={{ width: `${(phase.commits / maxPhaseCommits) * 100}%` }}
                   />
                 </div>
-                {phase.period && <p className="mt-1 text-xs text-gray-500">{phase.period}</p>}
+                {phase.period && <p className="mt-1 text-[11px] text-[#6f768d] dark:text-[#7b8099]">{phase.period}</p>}
               </div>
             ))}
           </div>
@@ -125,14 +225,14 @@ function AnalyticsPanel({ data }) {
       </section>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <section className="rounded-2xl border border-slate-200 bg-white p-6">
+        <section className="rounded-xl border border-[#d8deea] bg-white p-6 shadow-[0_1px_3px_rgba(0,0,0,0.08)] dark:border-[#2e3142] dark:bg-[#1a1d27] dark:shadow-[0_1px_3px_rgba(0,0,0,0.4)]">
           <div className="mb-4 flex items-center gap-2">
-            <PieChart className="h-5 w-5 text-green-600" />
-            <h2 className="text-xl font-bold text-gray-900">Top Contributor Share</h2>
+            <PieChart className="h-5 w-5 text-[#6c63ff]" />
+            <h2 className="text-[22px] font-semibold text-[#191c26] dark:text-[#eaeaf0]">Top Contributor Share</h2>
           </div>
 
           {topContributors.length === 0 ? (
-            <p className="text-gray-500">No contributor data available</p>
+            <p className="text-[#6f768d] dark:text-[#7b8099]">No contributor data available</p>
           ) : (
             <div className="space-y-3">
               {topContributors.map((contributor, index) => {
@@ -142,12 +242,12 @@ function AnalyticsPanel({ data }) {
                 return (
                   <div key={`${contributor.name}-${index}`}>
                     <div className="mb-1 flex items-center justify-between text-sm">
-                      <span className="font-medium text-gray-700">{contributor.name}</span>
-                      <span className="font-semibold text-gray-900">{share.toFixed(1)}%</span>
+                      <span className="font-medium text-[#6f768d] dark:text-[#9aa0b8]">{contributor.name}</span>
+                      <span className="font-semibold text-[#191c26] dark:text-[#eaeaf0]">{share.toFixed(1)}%</span>
                     </div>
-                    <div className="h-2 rounded-full bg-gray-100">
+                    <div className="h-2 rounded-full bg-[#eef1f7] dark:bg-[#252836]">
                       <div
-                        className="h-full rounded-full bg-linear-to-r from-emerald-500 to-lime-500"
+                        className="h-full rounded-full bg-[#00c896]"
                         style={{ width: `${share}%` }}
                       />
                     </div>
@@ -158,26 +258,40 @@ function AnalyticsPanel({ data }) {
           )}
         </section>
 
-        <section className="rounded-2xl border border-slate-200 bg-white p-6">
+        <section className="rounded-xl border border-[#d8deea] bg-white p-6 shadow-[0_1px_3px_rgba(0,0,0,0.08)] dark:border-[#2e3142] dark:bg-[#1a1d27] dark:shadow-[0_1px_3px_rgba(0,0,0,0.4)]">
           <div className="mb-4 flex items-center gap-2">
-            <GitBranch className="h-5 w-5 text-orange-600" />
-            <h2 className="text-xl font-bold text-gray-900">Milestone Mix</h2>
+            <GitBranch className="h-5 w-5 text-[#6c63ff]" />
+            <h2 className="text-[22px] font-semibold text-[#191c26] dark:text-[#eaeaf0]">Milestone Mix</h2>
           </div>
 
           {milestoneTypeRows.length === 0 ? (
-            <p className="text-gray-500">No milestone type data available</p>
+            <p className="text-[#6f768d] dark:text-[#7b8099]">No milestone type data available</p>
           ) : (
             <div className="space-y-3">
               {milestoneTypeRows.map((row) => (
-                <div key={row.type} className="flex items-center justify-between rounded-lg border border-orange-100 bg-orange-50 px-3 py-2">
-                  <span className="text-sm font-medium capitalize text-orange-900">{row.type}</span>
-                  <span className="text-sm font-bold text-orange-700">{row.count}</span>
+                <div key={row.type} className="flex items-center justify-between rounded-lg border border-[#d8deea] bg-[#f0f3fa] px-3 py-2 dark:border-[#2e3142] dark:bg-[#252836]">
+                  <span className="text-sm font-medium capitalize text-[#6f768d] dark:text-[#9aa0b8]">{row.type}</span>
+                  <span className="text-sm font-semibold text-[#191c26] dark:text-[#eaeaf0]">{row.count}</span>
                 </div>
               ))}
             </div>
           )}
         </section>
       </div>
+
+      {!compact && (
+        <section className="rounded-xl border border-[#d8deea] bg-white p-6 shadow-[0_1px_3px_rgba(0,0,0,0.08)] dark:border-[#2e3142] dark:bg-[#1a1d27] dark:shadow-[0_1px_3px_rgba(0,0,0,0.4)]">
+          <div className="mb-3 flex items-center gap-2">
+            <TrendingUp className="h-5 w-5 text-[#6c63ff]" />
+            <h2 className="text-[22px] font-semibold text-[#191c26] dark:text-[#eaeaf0]">Summary Insight</h2>
+          </div>
+          <p className="text-[#6f768d] dark:text-[#9aa0b8]">
+            Commit activity is concentrated in <span className="font-semibold text-[#191c26] dark:text-[#eaeaf0]">{phaseRows[0]?.label || 'early phases'}</span>,
+            while contributor ownership is led by <span className="font-semibold text-[#191c26] dark:text-[#eaeaf0]">{topContributors[0]?.name || 'the core team'}</span>.
+            Use this view to quickly detect over-concentration and planning bottlenecks.
+          </p>
+        </section>
+      )}
     </div>
   )
 }

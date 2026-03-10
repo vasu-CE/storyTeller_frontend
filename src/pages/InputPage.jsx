@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Github, BookOpen } from 'lucide-react'
+import { Github, BookOpen, GitBranch, Clock3, ShieldCheck } from 'lucide-react'
 import { Button } from '../components/ui/button'
 
 function InputPage() {
@@ -40,90 +40,116 @@ function InputPage() {
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 via-blue-50 to-slate-100 px-4 py-12">
-      <div className="mx-auto max-w-2xl">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center rounded-lg bg-blue-100 p-3 mb-4">
-            <BookOpen className="h-8 w-8 text-blue-600" />
+    <div className="min-h-screen bg-[#f5f7fb] px-4 py-8 text-[#6f768d] dark:bg-[#0f1117] dark:text-[#9aa0b8]">
+      <main className="mx-auto grid min-h-screen max-w-7xl items-center gap-10 sm:px-2 lg:grid-cols-2 lg:px-6">
+        <section className="hero-reveal mt-6 space-y-6 lg:pr-8">
+          <div className="space-y-4">
+            <h1 className="text-balance text-4xl font-bold leading-[1.05] text-[#191c26] sm:text-5xl lg:text-6xl dark:text-[#eaeaf0]">
+              The GitHub Narrative
+              <span className="block text-[#6c63ff]">
+                Intelligence Console
+              </span>
+            </h1>
+            <p className="max-w-xl text-base leading-relaxed text-[#6f768d] sm:text-lg dark:text-[#9aa0b8]">
+              Turn raw commit streams into timelines, milestones, contributor intelligence, and documentary-style project stories in one focused analysis.
+            </p>
           </div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-3">
-            Git History Storyteller
-          </h1>
-          <p className="text-lg text-gray-600">
-            Transform your repository's commit history into a compelling narrative
-          </p>
-        </div>
 
-        {/* Main Card */}
-        <div className="rounded-2xl border border-slate-200 bg-white/90 shadow-xl backdrop-blur p-8">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-2">
-              <label htmlFor="repo-url" className="block text-sm font-semibold text-gray-800">
-                Repository URL
-              </label>
-              <div className="relative">
-                <Github className="absolute left-4 top-3.5 h-5 w-5 text-gray-400" />
-                <input
-                  id="repo-url"
-                  type="url"
-                  value={repoUrl}
-                  onChange={(e) => {
-                    setRepoUrl(e.target.value)
-                    error && setError('')
-                  }}
-                  placeholder="https://github.com/owner/repository"
-                  autoComplete="off"
-                  disabled={isLoading}
-                  className="w-full pl-12 pr-4 py-3 rounded-lg border border-slate-200 bg-white text-gray-900 placeholder-gray-400 disabled:bg-gray-50 disabled:text-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-                />
+          <div className="grid gap-3 sm:grid-cols-3">
+            <div className="glass-card stagger-item rounded-2xl p-4" style={{ animationDelay: '80ms' }}>
+              <GitBranch className="mb-2 h-5 w-5 text-[#6c63ff]" />
+              <p className="text-xs uppercase tracking-wide text-[#7b8099]">Timeline Aware</p>
+              <p className="text-sm font-semibold text-[#191c26] dark:text-[#eaeaf0]">Phase-by-phase project arc</p>
+            </div>
+            <div className="glass-card stagger-item rounded-2xl p-4" style={{ animationDelay: '180ms' }}>
+              <Clock3 className="mb-2 h-5 w-5 text-[#6c63ff]" />
+              <p className="text-xs uppercase tracking-wide text-[#7b8099]">Fast Analysis</p>
+              <p className="text-sm font-semibold text-[#191c26] dark:text-[#eaeaf0]">Optimized for long histories</p>
+            </div>
+            <div className="glass-card stagger-item rounded-2xl p-4" style={{ animationDelay: '280ms' }}>
+              <ShieldCheck className="mb-2 h-5 w-5 text-[#00c896]" />
+              <p className="text-xs uppercase tracking-wide text-[#7b8099]">Reliable Output</p>
+              <p className="text-sm font-semibold text-[#191c26] dark:text-[#eaeaf0]">Structured JSON insights</p>
+            </div>
+          </div>
+        </section>
+
+        <section className="hero-reveal [animation-delay:140ms]">
+          <div className="glass-card rounded-2xl p-6 sm:p-8">
+            <div className="mb-6 flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="rounded-xl border border-[#d8deea] bg-[#f0f3fa] p-2.5 dark:border-[#2e3142] dark:bg-[#252836]">
+                  <BookOpen className="h-5 w-5 text-[#6c63ff]" />
+                </div>
+                <div>
+                  <p className="text-xs uppercase tracking-[0.15em] text-[#7b8099]">Repository Input</p>
+                  <h2 className="text-lg font-semibold text-[#191c26] dark:text-[#eaeaf0]">Start Your Analysis</h2>
+                </div>
               </div>
-              <p className="text-xs text-gray-500">
-                Supports public GitHub, GitLab, and other Git repositories
-              </p>
+              <Github className="h-6 w-6 text-[#7b8099]" />
             </div>
 
-            {error && (
-              <div className="rounded-lg bg-red-50 border border-red-200 p-3 text-sm text-red-700">
-                {error}
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div className="space-y-2">
+                <label htmlFor="repo-url" className="block text-sm font-medium text-[#191c26] dark:text-[#eaeaf0]">
+                  Repository URL
+                </label>
+                <div className="relative">
+                  <Github className="absolute left-4 top-3.5 h-5 w-5 text-[#7b8099]" />
+                  <input
+                    id="repo-url"
+                    type="url"
+                    value={repoUrl}
+                    onChange={(e) => {
+                      setRepoUrl(e.target.value)
+                      error && setError('')
+                    }}
+                    placeholder="https://github.com/owner/repository"
+                    autoComplete="off"
+                    disabled={isLoading}
+                    className="w-full rounded-xl border border-[#d8deea] bg-white py-3 pl-12 pr-4 text-[#191c26] placeholder:text-[#7b8099] disabled:cursor-not-allowed disabled:opacity-70 focus:border-[#6c63ff] focus:outline-none dark:border-[#2e3142] dark:bg-[#21242f] dark:text-[#eaeaf0]"
+                  />
+                </div>
+                <p className="text-xs text-[#7b8099]">
+                  Supports public GitHub, GitLab, and other Git repositories
+                </p>
               </div>
-            )}
 
-            <Button
-              type="submit"
-              disabled={isLoading || !repoUrl.trim()}
-              className="w-full h-12 rounded-lg font-medium text-base"
+              {error && (
+                <div className="rounded-xl border border-[#d8deea] bg-[#f0f3fa] p-3 text-sm text-[#191c26] dark:border-[#2e3142] dark:bg-[#252836] dark:text-[#eaeaf0]">
+                  {error}
+                </div>
+              )}
+
+              <Button
+                type="submit"
+                disabled={isLoading || !repoUrl.trim()}
+                className="h-12 w-full rounded-lg border border-[#6c63ff] bg-[#6c63ff] text-base font-semibold text-white hover:bg-[#5c54e6]"
+              >
+                {isLoading ? 'Starting Analysis...' : 'Analyze Repository'}
+              </Button>
+            </form>
+
+          <div className="mt-6 grid gap-2 text-sm">
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#7b8099]">Popular examples</p>
+            <button
+              type="button"
+              onClick={() => setRepoUrl('https://github.com/facebook/react')}
+              className="rounded-lg border border-[#d8deea] bg-white px-3 py-2 text-left text-[#191c26] transition hover:bg-[#f0f3fa] dark:border-[#2e3142] dark:bg-[#21242f] dark:text-[#eaeaf0] dark:hover:bg-[#252836]"
             >
-              {isLoading ? 'Starting Analysis...' : 'Analyze Repository'}
-            </Button>
-          </form>
-
-          {/* Examples */}
-          <div className="mt-6 rounded-lg bg-blue-50 border border-blue-200 p-4">
-            <p className="text-sm text-blue-900 font-medium mb-2">Try these example repositories:</p>
-            <ul className="text-xs text-blue-800 space-y-1">
-              <li>
-                <button
-                  type="button"
-                  onClick={() => setRepoUrl('https://github.com/facebook/react')}
-                  className="hover:underline"
-                >
-                  https://github.com/facebook/react
-                </button>
-              </li>
-              <li>
-                <button
-                  type="button"
-                  onClick={() => setRepoUrl('https://github.com/microsoft/vscode')}
-                  className="hover:underline"
-                >
-                  https://github.com/microsoft/vscode
-                </button>
-              </li>
-            </ul>
+              github.com/facebook/react
+            </button>
+            <button
+              type="button"
+              onClick={() => setRepoUrl('https://github.com/microsoft/vscode')}
+              className="rounded-lg border border-[#d8deea] bg-white px-3 py-2 text-left text-[#191c26] transition hover:bg-[#f0f3fa] dark:border-[#2e3142] dark:bg-[#21242f] dark:text-[#eaeaf0] dark:hover:bg-[#252836]"
+            >
+              github.com/microsoft/vscode
+            </button>
           </div>
-        </div>
-      </div>
+          </div>
+        </section>
+      </main>
     </div>
   )
 }

@@ -1,23 +1,48 @@
 import { Flag, Trophy, Zap, Award, Target } from 'lucide-react'
 
 const typeConfig = {
-  major: { color: 'text-purple-600', bg: 'bg-purple-50', border: 'border-purple-200', icon: Trophy },
-  feature: { color: 'text-blue-600', bg: 'bg-blue-50', border: 'border-blue-200', icon: Zap },
-  release: { color: 'text-green-600', bg: 'bg-green-50', border: 'border-green-200', icon: Flag },
-  achievement: { color: 'text-orange-600', bg: 'bg-orange-50', border: 'border-orange-200', icon: Award },
-  default: { color: 'text-gray-600', bg: 'bg-gray-50', border: 'border-gray-200', icon: Target },
+  major: {
+    color: 'text-purple-600 dark:text-purple-300',
+    bg: 'bg-purple-50 dark:bg-purple-950/30',
+    border: 'border-purple-200 dark:border-purple-900/70',
+    icon: Trophy
+  },
+  feature: {
+    color: 'text-blue-600 dark:text-blue-300',
+    bg: 'bg-blue-50 dark:bg-blue-950/30',
+    border: 'border-blue-200 dark:border-blue-900/70',
+    icon: Zap
+  },
+  release: {
+    color: 'text-green-600 dark:text-green-300',
+    bg: 'bg-green-50 dark:bg-green-950/30',
+    border: 'border-green-200 dark:border-green-900/70',
+    icon: Flag
+  },
+  achievement: {
+    color: 'text-orange-600 dark:text-orange-300',
+    bg: 'bg-orange-50 dark:bg-orange-950/30',
+    border: 'border-orange-200 dark:border-orange-900/70',
+    icon: Award
+  },
+  default: {
+    color: 'text-gray-600 dark:text-slate-300',
+    bg: 'bg-gray-50 dark:bg-slate-800/50',
+    border: 'border-gray-200 dark:border-slate-700',
+    icon: Target
+  },
 }
 
 function MilestoneList({ milestones }) {
   if (!milestones || milestones.length === 0) {
-    return <div className="text-gray-500">No milestones detected</div>
+    return <div className="text-[#6f768d] dark:text-[#7b8099]">No milestones detected</div>
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="flex items-center gap-2 mb-4">
-        <Trophy className="h-5 w-5 text-purple-600" />
-        <h2 className="text-2xl font-bold text-gray-900">Major Milestones</h2>
+        <Trophy className="h-5 w-5 text-[#6c63ff]" />
+        <h2 className="text-[22px] font-semibold text-[#191c26] dark:text-[#eaeaf0]">Major Milestones</h2>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
@@ -29,48 +54,47 @@ function MilestoneList({ milestones }) {
           return (
             <div
               key={index}
-              className={`rounded-xl border ${config.border} ${config.bg} p-5 transition hover:shadow-lg hover:scale-[1.02]`}
+              className="rounded-xl border border-[#d8deea] bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.08)] dark:border-[#2e3142] dark:bg-[#1a1d27] dark:shadow-[0_1px_3px_rgba(0,0,0,0.4)]"
             >
-              {/* Header */}
-              <div className="flex items-start gap-3 mb-3">
-                <div className={`p-2 rounded-lg ${config.bg} border ${config.border}`}>
-                  <Icon className={`h-5 w-5 ${config.color}`} />
+              <div className="border-l-[3px] border-[#00c896] pl-4">
+                {/* Header */}
+                <div className="mb-3 flex items-start gap-3">
+                  <div className="rounded-lg border border-[#d8deea] bg-[#eef1f7] p-2 dark:border-[#2e3142] dark:bg-[#252836]">
+                    <Icon className="h-5 w-5 text-[#6c63ff]" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="leading-tight text-[18px] font-semibold text-[#191c26] dark:text-[#eaeaf0]">
+                      {milestone.title || `Milestone ${index + 1}`}
+                    </h3>
+                  </div>
+                  <span className="rounded-md bg-[#eef1f7] px-2 py-1 text-[11px] text-[#00c896] dark:bg-[#252836]">
+                    {milestone.date || type}
+                  </span>
                 </div>
-                <div className="flex-1">
-                  <h3 className="text-lg font-bold text-gray-900 leading-tight">
-                    {milestone.title || `Milestone ${index + 1}`}
-                  </h3>
-                  {milestone.date && (
-                    <p className="text-xs text-gray-600 mt-1">{milestone.date}</p>
-                  )}
-                </div>
-                <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${config.bg} ${config.color} border ${config.border} capitalize`}>
-                  {type}
-                </span>
+
+                {/* Description */}
+                {milestone.description && (
+                  <p className="mb-3 text-[#6f768d] dark:text-[#9aa0b8]">
+                    {milestone.description}
+                  </p>
+                )}
+
+                {/* Impact */}
+                {milestone.impact && (
+                  <div className="rounded-lg border border-[#d8deea] bg-[#f0f3fa] p-3 dark:border-[#2e3142] dark:bg-[#21242f]">
+                    <p className="mb-1 text-xs font-medium text-[#191c26] dark:text-[#eaeaf0]">Impact:</p>
+                    <p className="text-xs text-[#6f768d] dark:text-[#9aa0b8]">{milestone.impact}</p>
+                  </div>
+                )}
+
+                {/* Commits Count */}
+                {milestone.commits_count && (
+                  <div className="mt-3 flex items-center gap-2 text-xs text-[#6f768d] dark:text-[#7b8099]">
+                    <span className="font-semibold text-[#191c26] dark:text-[#eaeaf0]">{milestone.commits_count}</span>
+                    <span>commits involved</span>
+                  </div>
+                )}
               </div>
-
-              {/* Description */}
-              {milestone.description && (
-                <p className="text-sm text-gray-700 leading-relaxed mb-3">
-                  {milestone.description}
-                </p>
-              )}
-
-              {/* Impact */}
-              {milestone.impact && (
-                <div className={`p-3 rounded-lg ${config.bg} border ${config.border}`}>
-                  <p className="text-xs font-semibold text-gray-900 mb-1">Impact:</p>
-                  <p className="text-xs text-gray-700">{milestone.impact}</p>
-                </div>
-              )}
-
-              {/* Commits Count */}
-              {milestone.commits_count && (
-                <div className="mt-3 flex items-center gap-2 text-xs text-gray-600">
-                  <span className="font-semibold">{milestone.commits_count}</span>
-                  <span>commits involved</span>
-                </div>
-              )}
             </div>
           )
         })}

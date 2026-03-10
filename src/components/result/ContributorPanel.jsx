@@ -8,7 +8,7 @@ function ContributorPanel({ contributors }) {
       : []
 
   if (contributorList.length === 0) {
-    return <div className="text-gray-500">No contributor data available</div>
+    return <div className="text-[#6f768d] dark:text-[#7b8099]">No contributor data available</div>
   }
 
   // Calculate totals
@@ -18,44 +18,44 @@ function ContributorPanel({ contributors }) {
   const totalContributors = contributors?.totalContributors || contributorList.length
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="flex items-center gap-2 mb-4">
-        <Users className="h-5 w-5 text-blue-600" />
-        <h2 className="text-2xl font-bold text-gray-900">Contributors</h2>
+        <Users className="h-5 w-5 text-[#6c63ff]" />
+        <h2 className="text-[22px] font-semibold text-[#191c26] dark:text-[#eaeaf0]">Contributors</h2>
       </div>
 
       {/* Summary Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="p-4 rounded-xl bg-blue-50 border border-blue-200">
+        <div className="rounded-xl border border-[#d8deea] bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.08)] dark:border-[#2e3142] dark:bg-[#1a1d27] dark:shadow-[0_1px_3px_rgba(0,0,0,0.4)]">
           <div className="flex items-center gap-2 mb-1">
-            <Users className="h-4 w-4 text-blue-600" />
-            <p className="text-xs font-semibold text-blue-900 uppercase">Contributors</p>
+            <Users className="h-4 w-4 text-[#6c63ff]" />
+            <p className="text-[11px] uppercase tracking-wide text-[#6f768d] dark:text-[#7b8099]">Contributors</p>
           </div>
-          <p className="text-2xl font-bold text-blue-700">{totalContributors}</p>
+          <p className="text-xl font-semibold text-[#191c26] dark:text-[#eaeaf0]">{totalContributors}</p>
         </div>
 
-        <div className="p-4 rounded-xl bg-green-50 border border-green-200">
+        <div className="rounded-xl border border-[#d8deea] bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.08)] dark:border-[#2e3142] dark:bg-[#1a1d27] dark:shadow-[0_1px_3px_rgba(0,0,0,0.4)]">
           <div className="flex items-center gap-2 mb-1">
-            <GitCommit className="h-4 w-4 text-green-600" />
-            <p className="text-xs font-semibold text-green-900 uppercase">Total Commits</p>
+            <GitCommit className="h-4 w-4 text-[#6c63ff]" />
+            <p className="text-[11px] uppercase tracking-wide text-[#6f768d] dark:text-[#7b8099]">Total Commits</p>
           </div>
-          <p className="text-2xl font-bold text-green-700">{totalCommits.toLocaleString()}</p>
+          <p className="text-xl font-semibold text-[#191c26] dark:text-[#eaeaf0]">{totalCommits.toLocaleString()}</p>
         </div>
 
-        <div className="p-4 rounded-xl bg-purple-50 border border-purple-200">
+        <div className="rounded-xl border border-[#d8deea] bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.08)] dark:border-[#2e3142] dark:bg-[#1a1d27] dark:shadow-[0_1px_3px_rgba(0,0,0,0.4)]">
           <div className="flex items-center gap-2 mb-1">
-            <Code className="h-4 w-4 text-purple-600" />
-            <p className="text-xs font-semibold text-purple-900 uppercase">Lines Added</p>
+            <Code className="h-4 w-4 text-[#6c63ff]" />
+            <p className="text-[11px] uppercase tracking-wide text-[#6f768d] dark:text-[#7b8099]">Lines Added</p>
           </div>
-          <p className="text-2xl font-bold text-purple-700">{totalAdditions.toLocaleString()}</p>
+          <p className="text-xl font-semibold text-[#191c26] dark:text-[#eaeaf0]">{totalAdditions.toLocaleString()}</p>
         </div>
 
-        <div className="p-4 rounded-xl bg-orange-50 border border-orange-200">
+        <div className="rounded-xl border border-[#d8deea] bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.08)] dark:border-[#2e3142] dark:bg-[#1a1d27] dark:shadow-[0_1px_3px_rgba(0,0,0,0.4)]">
           <div className="flex items-center gap-2 mb-1">
-            <Code className="h-4 w-4 text-orange-600" />
-            <p className="text-xs font-semibold text-orange-900 uppercase">Lines Deleted</p>
+            <Code className="h-4 w-4 text-[#6c63ff]" />
+            <p className="text-[11px] uppercase tracking-wide text-[#6f768d] dark:text-[#7b8099]">Lines Deleted</p>
           </div>
-          <p className="text-2xl font-bold text-orange-700">{totalDeletions.toLocaleString()}</p>
+          <p className="text-xl font-semibold text-[#191c26] dark:text-[#eaeaf0]">{totalDeletions.toLocaleString()}</p>
         </div>
       </div>
 
@@ -71,35 +71,35 @@ function ContributorPanel({ contributors }) {
           return (
             <div
               key={index}
-              className="p-4 rounded-xl border border-slate-200 bg-white hover:shadow-md transition"
+              className="rounded-xl border border-[#d8deea] bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.08)] transition hover:bg-[#f0f3fa] dark:border-[#2e3142] dark:bg-[#1a1d27] dark:shadow-[0_1px_3px_rgba(0,0,0,0.4)] dark:hover:bg-[#21242f]"
             >
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-linear-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-bold">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-[#6c63ff] bg-[#eef1f7] text-[#191c26] font-semibold dark:bg-[#252836] dark:text-[#eaeaf0]">
                     {contributorName?.[0]?.toUpperCase() || <User className="h-5 w-5" />}
                   </div>
                   <div>
-                    <h3 className="font-bold text-gray-900">{contributorName}</h3>
+                    <h3 className="font-semibold text-[#191c26] dark:text-[#eaeaf0]">{contributorName}</h3>
                     {contributor.email && (
-                      <p className="text-sm text-gray-600">{contributor.email}</p>
+                      <p className="text-sm text-[#6f768d] dark:text-[#7b8099]">{contributor.email}</p>
                     )}
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-2xl font-bold text-blue-600">{commits}</p>
-                  <p className="text-xs text-gray-600">commits</p>
+                  <p className="text-xl font-semibold text-[#191c26] dark:text-[#eaeaf0]">{commits}</p>
+                  <p className="text-[11px] text-[#6f768d] dark:text-[#7b8099]">commits</p>
                 </div>
               </div>
 
               {/* Progress Bar */}
               <div className="mb-2">
                 <div className="flex justify-between items-center mb-1">
-                  <span className="text-xs text-gray-600">Contribution</span>
-                  <span className="text-xs font-semibold text-gray-900">{percentage}%</span>
+                  <span className="text-[11px] text-[#6f768d] dark:text-[#7b8099]">Contribution</span>
+                  <span className="text-sm font-semibold text-[#191c26] dark:text-[#eaeaf0]">{percentage}%</span>
                 </div>
-                <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                <div className="h-2 overflow-hidden rounded-full bg-[#eef1f7] dark:bg-[#252836]">
                   <div
-                    className="h-full bg-linear-to-r from-blue-500 to-purple-500 rounded-full transition-all"
+                    className="h-full rounded-full bg-[#6c63ff] transition-all"
                     style={{ width: `${percentage}%` }}
                   />
                 </div>
@@ -108,28 +108,28 @@ function ContributorPanel({ contributors }) {
               {/* Stats Row */}
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div className="flex items-center gap-2">
-                  <span className="text-green-600 font-bold">+{additions.toLocaleString()}</span>
-                  <span className="text-gray-600">additions</span>
+                  <span className="text-sm font-semibold text-[#191c26] dark:text-[#eaeaf0]">+{additions.toLocaleString()}</span>
+                  <span className="text-[11px] text-[#6f768d] dark:text-[#7b8099]">additions</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-red-600 font-bold">-{deletions.toLocaleString()}</span>
-                  <span className="text-gray-600">deletions</span>
+                  <span className="text-sm font-semibold text-[#191c26] dark:text-[#eaeaf0]">-{deletions.toLocaleString()}</span>
+                  <span className="text-[11px] text-[#6f768d] dark:text-[#7b8099]">deletions</span>
                 </div>
               </div>
 
               {/* First/Last Commit */}
               {(contributor.firstCommit || contributor.lastCommit || contributor.first_commit_date || contributor.last_commit_date) && (
-                <div className="mt-3 pt-3 border-t border-gray-100 text-xs text-gray-600">
+                <div className="mt-3 border-t border-[#d8deea] pt-3 text-[11px] text-[#6f768d] dark:border-[#2e3142] dark:text-[#7b8099]">
                   <div className="grid grid-cols-2 gap-2">
                     {(contributor.firstCommit || contributor.first_commit_date) && (
                       <div>
-                        <span className="font-semibold">First: </span>
+                        <span className="font-medium">First: </span>
                         {new Date(contributor.firstCommit || contributor.first_commit_date).toLocaleDateString()}
                       </div>
                     )}
                     {(contributor.lastCommit || contributor.last_commit_date) && (
                       <div>
-                        <span className="font-semibold">Last: </span>
+                        <span className="font-medium">Last: </span>
                         {new Date(contributor.lastCommit || contributor.last_commit_date).toLocaleDateString()}
                       </div>
                     )}

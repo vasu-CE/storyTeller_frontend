@@ -65,15 +65,15 @@ function AnalyzingPage() {
 
   if (status === 'error') {
     return (
-      <div className="min-h-screen bg-linear-to-br from-slate-50 via-red-50 to-slate-100 px-4 py-12 flex items-center justify-center">
-        <div className="max-w-md w-full bg-white rounded-2xl border border-red-200 shadow-xl p-8">
+      <div className="min-h-screen bg-[#f5f7fb] px-4 py-12 flex items-center justify-center dark:bg-[#0f1117]">
+        <div className="max-w-md w-full rounded-xl border border-[#d8deea] bg-white p-8 shadow-[0_1px_3px_rgba(0,0,0,0.08)] dark:border-[#2e3142] dark:bg-[#1a1d27] dark:shadow-[0_1px_3px_rgba(0,0,0,0.4)]">
           <div className="flex flex-col items-center text-center">
             <AlertCircle className="h-16 w-16 text-red-500 mb-4" />
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Analysis Failed</h2>
-            <p className="text-gray-600 mb-6">{error}</p>
+            <h2 className="mb-2 text-2xl font-semibold text-[#191c26] dark:text-[#eaeaf0]">Analysis Failed</h2>
+            <p className="mb-6 text-[#6f768d] dark:text-[#9aa0b8]">{error}</p>
             <button
               onClick={() => navigate('/')}
-              className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition"
+              className="rounded-lg border border-[#6c63ff] bg-[#6c63ff] px-6 py-3 font-medium text-white transition hover:bg-[#5c54e6]"
             >
               Try Another Repository
             </button>
@@ -84,8 +84,8 @@ function AnalyzingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 via-blue-50 to-slate-100 px-4 py-12 flex items-center justify-center">
-      <div className="max-w-md w-full bg-white rounded-2xl border border-slate-200 shadow-xl p-8">
+    <div className="min-h-screen bg-[#f5f7fb] px-4 py-12 flex items-center justify-center dark:bg-[#0f1117]">
+      <div className="max-w-md w-full rounded-xl border border-[#d8deea] bg-white p-8 shadow-[0_1px_3px_rgba(0,0,0,0.08)] dark:border-[#2e3142] dark:bg-[#1a1d27] dark:shadow-[0_1px_3px_rgba(0,0,0,0.4)]">
         <div className="flex flex-col items-center">
           {/* Status Icon */}
           <div className="mb-6">
@@ -97,32 +97,32 @@ function AnalyzingPage() {
           </div>
 
           {/* Title */}
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          <h2 className="mb-2 text-2xl font-semibold text-[#191c26] dark:text-[#eaeaf0]">
             {status === 'complete' ? 'Analysis Complete!' : 'Analyzing Repository'}
           </h2>
           
           {/* Current Step */}
-          <p className="text-gray-600 mb-8 text-center">
+          <p className="mb-8 text-center text-[#6f768d] dark:text-[#9aa0b8]">
             {status === 'complete' ? 'Preparing your results...' : currentStep}
           </p>
 
           {/* Progress Bar */}
-          <div className="w-full bg-gray-100 rounded-full h-3 mb-4 overflow-hidden">
+          <div className="mb-4 h-3 w-full overflow-hidden rounded-full bg-[#f0f3fa] dark:bg-[#252836]">
             <div
-              className="h-full bg-linear-to-r from-blue-500 to-blue-600 rounded-full transition-all duration-500 ease-out"
+              className="h-full rounded-full bg-[#6c63ff] transition-all duration-500 ease-out"
               style={{ width: `${progress}%` }}
             />
           </div>
           
           {/* Progress Percentage */}
-          <span className="text-sm font-medium text-gray-700">
+          <span className="text-sm font-medium text-[#191c26] dark:text-[#eaeaf0]">
             {Math.round(progress)}%
           </span>
 
           {/* Repository info */}
-          <div className="mt-6 w-full rounded-lg bg-blue-50 border border-blue-200 p-3">
-            <p className="text-xs text-blue-900 font-medium mb-1">Repository:</p>
-            <p className="text-xs text-blue-800 break-all">{repoUrl}</p>
+          <div className="mt-6 w-full rounded-lg border border-[#d8deea] bg-[#f0f3fa] p-3 dark:border-[#2e3142] dark:bg-[#21242f]">
+            <p className="mb-1 text-xs font-medium text-[#191c26] dark:text-[#eaeaf0]">Repository:</p>
+            <p className="break-all text-xs text-[#6f768d] dark:text-[#9aa0b8]">{repoUrl}</p>
           </div>
         </div>
       </div>
