@@ -1,6 +1,6 @@
 import { GitCommit, Users, CalendarClock } from 'lucide-react'
 
-function NarrativePanel({ narrative, repository, contributors, phases }) {
+function NarrativePanel({ narrative, repository, contributors, phases, classification }) {
   const toArray = (value) => {
     if (Array.isArray(value)) {
       return value.filter(Boolean)
@@ -28,124 +28,185 @@ function NarrativePanel({ narrative, repository, contributors, phases }) {
   }
 
   if (!narrative) {
-    return <div className="text-[#6f768d] dark:text-[#7b8099]">No narrative data available</div>
+    return <div className="text-[var(--text-secondary)] dark:text-[var(--text-muted)]">No narrative data available</div>
   }
 
   const { opening, middle_sections, turning_points, current_state, project_character } = narrative
   const middleSectionsList = toArray(middle_sections)
   const turningPointsList = toArray(turning_points)
 
-  const repoName = String(repository?.url || '')
-    .split('/')
-    .filter(Boolean)
-    .pop() || 'Repository'
+  const contributorList = Array.isArray(contributors?.contributors)
+    ? contributors.contributors
+    : Array.isArray(contributors)
+      ? contributors
+      : []
 
-  const totalCommits = repository?.totalCommits || 0
-  const totalContributors = contributors?.totalContributors || contributors?.contributors?.length || 0
-  const startDate = phases?.[0]?.startDate ? new Date(phases[0].startDate) : null
-  const endDate = phases?.[phases.length - 1]?.endDate ? new Date(phases[phases.length - 1].endDate) : null
-  const durationLabel = startDate && endDate
-    ? `${startDate.toLocaleDateString(undefined, { month: 'short', year: 'numeric' })} - ${endDate.toLocaleDateString(undefined, { month: 'short', year: 'numeric' })}`
-    : 'N/A'
+  // Build chapters: one per phase, paired with narrative text
+  const narrativeTexts = [opening, ...middleSectionsList].filter(Boolean)
+  const phasesArr = Array.isArray(phases) ? phases : []
 
-  const sectionHeading = (title) => (
-    <div className="mb-4 border-b border-[#d8deea] pb-4 dark:border-[#2e3142]">
-      <div className="flex items-center gap-2">
-        <span className="h-1 w-1 rounded-xs bg-[#6c63ff]" />
-        <h2 className="text-[20px] font-semibold text-[#191c26] dark:text-[#eaeaf0]">{title}</h2>
-      </div>
-    </div>
-  )
+  const chapters = phasesArr.map((phase, index) => ({
+    number: String(index + 1).padStart(2, '0'),
+    title: phase.phase_name || `Phase ${index + 1}`,
+    period: phase.period || '',
+    story: narrativeTexts[index] || phase.summary || '',
+    activities: Array.isArray(phase.key_activities) ? phase.key_activities : [],
+  }))
+
+  // Activity breakdown from classification
+  const classDefs = [
+    { label: 'Features', key: 'feat', color: 'var(--accent)' },
+    { label: 'Fixes', key: 'fix', color: 'var(--green)' },
+    { label: 'Refactor', key: 'refactor', color: 'var(--amber)' },
+    { label: 'Docs', key: 'docs', color: '#3b82f6' },
+    { label: 'Chores', key: 'chore', color: '#6b7280' },
+  ]
+  const total = classification?.total || 1
+  const activityRows = classDefs
+    .map(({ label, key, color }) => ({
+      label,
+      color,
+      count: classification?.[key] || 0,
+      percent: ((classification?.[key] || 0) / total) * 100,
+    }))
+    .filter((r) => r.count > 0)
+
+  const avatarColors = ['var(--accent)', 'var(--green)', 'var(--amber)', 'var(--red)', '#3b82f6']
 
   return (
-    <div className="space-y-8">
-      <section className="rounded-xl border border-[#d8deea] bg-white p-6 shadow-[0_1px_3px_rgba(0,0,0,0.08)] dark:border-[#2e3142] dark:bg-[#1a1d27] dark:shadow-[0_1px_3px_rgba(0,0,0,0.4)]">
-        <div className="border-l-4 border-[#6c63ff] pl-5">
-          <h1 className="text-[42px] font-bold leading-tight text-[#191c26] dark:text-[#eaeaf0]">{repoName}</h1>
-          <p className="mt-2 text-sm text-[#6f768d] dark:text-[#7b8099]">AI-Generated Story of Your Codebase</p>
-        </div>
+    <div className="grid gap-8 lg:grid-cols-[1fr_300px]">
+      {/* Left — Chapters */}
+      <div className="space-y-6">
+        {chapters.map((chapter, index) => (
+          <div
+            key={index}
+            className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-8 shadow-[0_1px_3px_rgba(0,0,0,0.08)] dark:border-[var(--surface3)] dark:bg-gradient-to-br dark:from-[var(--surface2)] dark:to-[#0f1018] dark:shadow-[0_2px_12px_rgba(0,0,0,0.5)]">
+            <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-4">
+                <span className="rounded bg-[var(--accent)] px-2.5 py-1 font-mono text-xs font-bold text-white">
+                  CH. {chapter.number}
+                </span>
+                <h2 className="text-2xl font-bold tracking-tight text-[var(--text-primary)] dark:text-[var(--text-primary)]">{chapter.title}</h2>
+              </div>
+              {chapter.period && (
+                <span className="font-mono text-xs text-[var(--text-secondary)] dark:text-[var(--text-muted)]">{chapter.period}</span>
+              )}
+            </div>
+            {chapter.story && (
+              <p className="leading-7 text-[var(--text-secondary)] dark:text-[var(--text-secondary)]">{chapter.story}</p>
+            )}
+            {chapter.activities.length > 0 && (
+              <div className="mt-5 flex flex-wrap gap-2">
+                {chapter.activities.slice(0, 6).map((activity, i) => (
+                  <span
+                    key={i}
+                    className="rounded-full border border-[var(--border)] bg-[var(--surface2)] px-3 py-1 font-mono text-xs text-[var(--text-secondary)] dark:border-[var(--surface3)] dark:bg-[var(--surface3)] dark:text-[var(--text-secondary)]"
+                  >
+                    {activity}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
 
-        <div className="mt-6 flex flex-wrap gap-3">
-          <div className="inline-flex items-center gap-2 rounded-full border border-[#d8deea] bg-[#eef1f7] px-3.5 py-1.5 text-[#191c26] dark:border-[#2e3142] dark:bg-[#252836] dark:text-[#eaeaf0]">
-            <GitCommit className="h-4 w-4 text-[#6c63ff]" />
-            <span className="text-sm">{totalCommits} Commits</span>
+        {/* Turning Points */}
+        {turningPointsList.length > 0 && (
+          <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-8 shadow-[0_1px_3px_rgba(0,0,0,0.08)] dark:border-[var(--surface3)] dark:bg-[var(--surface)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.5)]">
+            <div className="mb-5 border-b border-[var(--border)] pb-4 dark:border-[var(--border)]">
+              <h2 className="text-xl font-semibold text-[var(--text-primary)] dark:text-[var(--text-primary)]">Key Turning Points</h2>
+            </div>
+            <ul className="space-y-4">
+              {turningPointsList.map((point, index) => (
+                <li key={index} className="border-l-[3px] border-[var(--green)] pl-4">
+                  <p className="leading-6 text-[var(--text-secondary)] dark:text-[var(--text-secondary)]">{point}</p>
+                </li>
+              ))}
+            </ul>
           </div>
-          <div className="inline-flex items-center gap-2 rounded-full border border-[#d8deea] bg-[#eef1f7] px-3.5 py-1.5 text-[#191c26] dark:border-[#2e3142] dark:bg-[#252836] dark:text-[#eaeaf0]">
-            <Users className="h-4 w-4 text-[#6c63ff]" />
-            <span className="text-sm">{totalContributors} Contributors</span>
-          </div>
-          <div className="inline-flex items-center gap-2 rounded-full border border-[#d8deea] bg-[#eef1f7] px-3.5 py-1.5 text-[#191c26] dark:border-[#2e3142] dark:bg-[#252836] dark:text-[#eaeaf0]">
-            <CalendarClock className="h-4 w-4 text-[#6c63ff]" />
-            <span className="text-sm">{durationLabel}</span>
-          </div>
-        </div>
-      </section>
+        )}
 
-      {/* Project Character Badge */}
-      {project_character && (
-        <div className="rounded-xl border border-[#d8deea] bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.08)] dark:border-[#2e3142] dark:bg-[#1a1d27] dark:shadow-[0_1px_3px_rgba(0,0,0,0.4)]">
-          <div className="border-l-4 border-[#6c63ff] pl-4">
-          <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#6c63ff]">PROJECT CHARACTER</p>
-              <p className="mt-1 text-[18px] font-semibold text-[#191c26] dark:text-[#eaeaf0]">{project_character}</p>
+        {/* Current State */}
+        {current_state && (
+          <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-8 shadow-[0_1px_3px_rgba(0,0,0,0.08)] dark:border-[var(--surface3)] dark:bg-[var(--surface)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.5)]">
+            <div className="mb-5 border-b border-[var(--border)] pb-4 dark:border-[var(--border)]">
+              <h2 className="text-xl font-semibold text-[var(--text-primary)] dark:text-[var(--text-primary)]">Where We Are Now</h2>
+            </div>
+            <p className="leading-7 text-[var(--text-secondary)] dark:text-[var(--text-secondary)]">{current_state}</p>
+          </div>
+        )}
+      </div>
+
+      {/* Right — Sidebar */}
+      <div className="space-y-5 lg:sticky lg:top-32 lg:self-start">
+        {/* Project Character */}
+        {project_character && (
+          <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[0_1px_3px_rgba(0,0,0,0.08)] dark:border-[var(--surface3)] dark:bg-[var(--surface)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.5)]">
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--text-secondary)] dark:text-[var(--text-muted)]">
+              Project Character
+            </p>
+            <div className="mt-4">
+              <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-[var(--accent)]">Archetype</p>
+              <h3 className="mt-1 text-xl font-bold text-[var(--text-primary)] dark:text-[var(--text-primary)]">{project_character}</h3>
+              {current_state && (
+                <p className="mt-2 text-xs leading-5 text-[var(--text-secondary)] dark:text-[var(--text-muted)]">
+                  {current_state.slice(0, 130)}
+                  {current_state.length > 130 ? '…' : ''}
+                </p>
+              )}
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Opening */}
-      {opening && (
-        <section>
-          {sectionHeading('The Beginning')}
-          <div className="rounded-xl border border-[#d8deea] bg-white px-6 py-5 text-[#6f768d] transition-all duration-200 hover:border-[#6c63ff] hover:bg-[#f0f3fa] dark:border-[#2e3142] dark:bg-[#1a1d27] dark:text-[#9aa0b8] dark:hover:bg-[#21242f]">
-            <p>{opening}</p>
-          </div>
-        </section>
-      )}
-
-      {/* Middle Sections */}
-      {middleSectionsList.length > 0 && (
-        <section>
-          {sectionHeading('The Journey')}
-          <div className="space-y-4">
-            {middleSectionsList.map((section, index) => (
-              <div key={index} className="rounded-xl border border-[#d8deea] bg-white px-6 py-5 text-[#6f768d] transition-all duration-200 hover:border-[#6c63ff] hover:bg-[#f0f3fa] dark:border-[#2e3142] dark:bg-[#1a1d27] dark:text-[#9aa0b8] dark:hover:bg-[#21242f]">
-                <p>{section}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Turning Points */}
-      {turningPointsList.length > 0 && (
-        <section>
-          {sectionHeading('Key Turning Points')}
-          <ul className="space-y-2">
-            {turningPointsList.map((point, index) => (
-              <li key={index} className="rounded-xl border border-[#d8deea] bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.08)] dark:border-[#2e3142] dark:bg-[#1a1d27] dark:shadow-[0_1px_3px_rgba(0,0,0,0.4)]">
-                <div className="border-l-[3px] border-[#00c896] pl-4">
-                  <div className="mb-2 flex items-center justify-between gap-3">
-                    <p className="text-base font-semibold text-[#191c26] dark:text-[#eaeaf0]">Turning Point {index + 1}</p>
-                    <span className="rounded-md bg-[#eef1f7] px-2 py-1 text-[11px] text-[#00c896] dark:bg-[#252836]">Point {index + 1}</span>
+        {/* Contributors */}
+        {contributorList.length > 0 && (
+          <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[0_1px_3px_rgba(0,0,0,0.08)] dark:border-[var(--surface3)] dark:bg-[var(--surface)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.5)]">
+            <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--text-secondary)] dark:text-[var(--text-muted)]">
+              Contributors
+            </p>
+            <div className="space-y-3">
+              {contributorList.slice(0, 5).map((contributor, index) => (
+                <div key={index} className="flex items-center gap-3">
+                  <div
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white"
+                    style={{ backgroundColor: avatarColors[index % avatarColors.length] }}
+                  >
+                    {(contributor.name || '?')[0].toUpperCase()}
                   </div>
-                  <p className="text-[#6f768d] dark:text-[#9aa0b8]">{point}</p>
+                  <span className="text-sm font-medium text-[var(--text-primary)] dark:text-[var(--text-primary)]">{contributor.name}</span>
                 </div>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
-
-      {/* Current State */}
-      {current_state && (
-        <section>
-          {sectionHeading('Where We Are Now')}
-          <div className="rounded-xl border border-[#d8deea] bg-white px-6 py-5 text-[#6f768d] transition-all duration-200 hover:border-[#6c63ff] hover:bg-[#f0f3fa] dark:border-[#2e3142] dark:bg-[#1a1d27] dark:text-[#9aa0b8] dark:hover:bg-[#21242f]">
-            <p>{current_state}</p>
+              ))}
+            </div>
           </div>
-        </section>
-      )}
+        )}
+
+        {/* Activity Breakdown */}
+        {activityRows.length > 0 && (
+          <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[0_1px_3px_rgba(0,0,0,0.08)] dark:border-[var(--surface3)] dark:bg-[var(--surface)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.5)]">
+            <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--text-secondary)] dark:text-[var(--text-muted)]">
+              Activity Breakdown
+            </p>
+            <div className="space-y-3">
+              {activityRows.map((row) => (
+                <div key={row.label}>
+                  <div className="mb-1 flex items-center justify-between text-xs">
+                    <span className="font-medium text-[var(--text-secondary)] dark:text-[var(--text-secondary)]">{row.label}</span>
+                  </div>
+                  <div className="h-1.5 rounded-full bg-[var(--surface2)] dark:bg-[#1e2030]">
+                    <div
+                      className="h-full rounded-full transition-all"
+                      style={{
+                        width: `${Math.max(row.percent, 3)}%`,
+                        backgroundColor: row.color,
+                      }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

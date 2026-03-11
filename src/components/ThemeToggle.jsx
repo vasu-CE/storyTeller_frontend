@@ -11,7 +11,7 @@ function ThemeToggle({ theme, onToggle }) {
         variant="outline"
         size="icon"
         onClick={onToggle}
-        className="rounded-full border border-[#d8deea] bg-white text-[#191c26] hover:bg-[#f0f3fa] dark:border-[#2e3142] dark:bg-[#1a1d27] dark:text-[#eaeaf0] dark:hover:bg-[#21242f]"
+        className="rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--text-primary)] hover:bg-[var(--surface3)]"
         aria-label={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
         title={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
       >

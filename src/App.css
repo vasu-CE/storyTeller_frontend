@@ -6,15 +6,15 @@
 }
 
 .glass-card {
-  border: 1px solid #d8deea;
-  background: #ffffff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: none;
 }
 
 .dark .glass-card {
-  border: 1px solid #2e3142;
-  background: #1a1d27;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: none;
 }
 
 .hero-reveal {

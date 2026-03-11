@@ -43,23 +43,23 @@ function AnalysisProgress({ progress }) {
   const progressPercent = getPercent(progress)
 
   return (
-    <div className="rounded-2xl border border-[#2e3142] bg-[#1a1d27] p-6 text-[#eaeaf0] shadow-[0_1px_3px_rgba(0,0,0,0.4)]">
+    <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 text-[var(--text-primary)] shadow-[0_1px_3px_rgba(0,0,0,0.4)]">
       <div className="mb-6 flex items-start justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-semibold text-[#eaeaf0]">Analyzing Repository</h2>
-          <p className="mt-2 text-[14px] text-[#9aa0b8]" style={{ fontFamily: 'Inter, sans-serif' }}>
+          <h2 className="text-2xl font-semibold text-[var(--text-primary)]">Analyzing Repository</h2>
+          <p className="mt-2 text-[14px] text-[var(--text-secondary)]">
             {progress?.message || 'Preparing analysis...'}
           </p>
           {currentStep === 'phase' && progress?.current && progress?.total && (
-            <p className="mt-1 text-[14px] text-[#7b8099]" style={{ fontFamily: 'Inter, sans-serif' }}>
+            <p className="mt-1 text-[14px] text-[var(--text-muted)]">
               Analyzing phase {progress.current} / {progress.total}
             </p>
           )}
         </div>
 
         <div
-          className="shrink-0 text-[13px] font-semibold text-[#6c63ff]"
-          style={{ fontFamily: 'Sora, sans-serif' }}
+          className="shrink-0 text-[13px] font-semibold text-[var(--accent)]"
+          style={{ fontFamily: 'JetBrains Mono, monospace' }}
         >
           {progressPercent}%
         </div>
@@ -75,29 +75,29 @@ function AnalysisProgress({ progress }) {
               <div key={step} className="flex items-center gap-3">
                 <div className="flex flex-col items-center gap-2">
                   <div className="relative flex h-8 w-8 items-center justify-center">
-                    {isCurrent && <span className="absolute h-8 w-8 rounded-full border border-[#6c63ff] animate-ping" />}
+                    {isCurrent && <span className="absolute h-8 w-8 rounded-full border border-[var(--accent)] animate-ping" />}
                     <span
                       className={`relative h-4 w-4 rounded-full border ${
                         isCompleted
-                          ? 'border-[#6c63ff] bg-[#6c63ff]'
+                          ? 'border-[var(--accent)] bg-[var(--accent)]'
                           : isCurrent
-                            ? 'border-[#6c63ff] bg-[#1a1d27]'
-                            : 'border-[#2e3142] bg-transparent'
+                            ? 'border-[var(--accent)] bg-[var(--surface)]'
+                            : 'border-[var(--border)] bg-transparent'
                       }`}
                     />
                   </div>
-                  <span className="text-xs text-[#7b8099]">{STEP_LABELS[step]}</span>
+                  <span className="text-xs text-[var(--text-muted)]">{STEP_LABELS[step]}</span>
                 </div>
-                {index < STEP_ORDER.length - 1 && <div className="h-px w-8 bg-[#2e3142]" />}
+                {index < STEP_ORDER.length - 1 && <div className="h-px w-8 bg-[var(--border)]" />}
               </div>
             )
           })}
         </div>
       </div>
 
-      <div className="h-[6px] w-full overflow-hidden rounded-full border border-[#2e3142] bg-[#1a1d27]">
+      <div className="h-[6px] w-full overflow-hidden rounded-full border border-[var(--border)] bg-[var(--surface)]">
         <div
-          className="h-full rounded-full bg-[#6c63ff] transition-[width] duration-400 ease-[ease]"
+          className="h-full rounded-full bg-[var(--accent)] transition-[width] duration-400 ease-[ease]"
           style={{ width: `${progressPercent}%` }}
         />
       </div>
