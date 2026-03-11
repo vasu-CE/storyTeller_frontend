@@ -4,6 +4,12 @@ function toNumber(value) {
   return typeof value === 'number' && Number.isFinite(value) ? value : 0
 }
 
+function formatCategoryLabel(key) {
+  return String(key || '')
+    .replace(/_/g, ' ')
+    .replace(/\b\w/g, (ch) => ch.toUpperCase())
+}
+
 function computeMonthlyActivity(phases) {
   const monthMap = {}
   let hasDateBuckets = false
@@ -68,6 +74,14 @@ function AnalyticsPanel({ data }) {
   const phases = Array.isArray(data.phases) ? data.phases : []
   const milestones = Array.isArray(data.milestones) ? data.milestones : []
   const classification = data.classification || {}
+  const codeChangeInterpretation = data.codeChangeInterpretation || {}
+  const interpretationCategories = codeChangeInterpretation.categories || {}
+  const interpretationEvents = Array.isArray(codeChangeInterpretation.majorImpactEvents)
+    ? codeChangeInterpretation.majorImpactEvents
+    : []
+  const interpretationSummary = Array.isArray(codeChangeInterpretation.systemImpactSummary)
+    ? codeChangeInterpretation.systemImpactSummary
+    : []
   const architecturalChanges = Array.isArray(data.architecturalChanges) ? data.architecturalChanges : []
   const stabilizationPeriods = Array.isArray(data.stabilizationPeriods) ? data.stabilizationPeriods : []
   const velocityData = Array.isArray(data.velocityData) ? data.velocityData : []
@@ -126,6 +140,17 @@ function AnalyticsPanel({ data }) {
     }
   })
   const maxPhaseCommits = Math.max(...phaseRows.map((p) => p.commits), 1)
+
+  const interpretationRows = Object.entries(interpretationCategories)
+    .map(([type, count]) => ({
+      type,
+      label: formatCategoryLabel(type),
+      count: toNumber(count),
+      color: typeColorMap.arch,
+    }))
+    .filter((item) => item.count > 0)
+    .sort((a, b) => b.count - a.count)
+  const maxInterpretationCount = Math.max(...interpretationRows.map((r) => r.count), 1)
 
   // Monthly activity
   const monthlyData = computeMonthlyActivity(phases)
@@ -261,6 +286,84 @@ function AnalyticsPanel({ data }) {
             <p className="mt-0.5 text-xs text-[var(--text-secondary)] dark:text-[var(--text-muted)]">{card.sub}</p>
           </div>
         ))}
+      </div>
+
+      {/* Code Change Interpretation */}
+      <div className="grid gap-6 xl:grid-cols-2">
+        <section className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[0_1px_3px_rgba(0,0,0,0.08)] dark:border-[var(--surface3)] dark:bg-[var(--surface)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.5)]">
+          <div className="mb-5 flex items-center justify-between">
+            <h2 className="text-base font-semibold text-[var(--text-primary)] dark:text-[var(--text-primary)]">Code Change Interpretation</h2>
+            <span className="rounded-md border border-[var(--border)] bg-[var(--surface2)] px-2 py-0.5 text-xs text-[var(--text-secondary)] dark:border-[var(--surface3)] dark:bg-[var(--surface3)] dark:text-[var(--text-muted)]">
+              {toNumber(codeChangeInterpretation.interpretedCommits)} interpreted commits
+            </span>
+          </div>
+
+          {interpretationRows.length === 0 ? (
+            <p className="text-[var(--text-secondary)] dark:text-[var(--text-muted)]">No interpreted diff categories available yet</p>
+          ) : (
+            <div className="max-h-[320px] overflow-y-auto pr-1 space-y-4 scrollbar-thin scrollbar-thumb-[var(--surface3)] scrollbar-track-transparent">
+              {interpretationRows.map((item) => (
+                <div key={item.type}>
+                  <div className="mb-1.5 flex items-center justify-between text-sm">
+                    <span className="font-medium text-[var(--text-secondary)] dark:text-[var(--text-secondary)]">{item.label}</span>
+                    <span className="font-semibold text-[var(--text-primary)] dark:text-[var(--text-primary)]">{item.count}</span>
+                  </div>
+                  <div className="h-2 rounded-full bg-[var(--surface2)] dark:bg-[#1e2030]">
+                    <div
+                      className="h-full rounded-full transition-all"
+                      style={{
+                        width: `${Math.max((item.count / maxInterpretationCount) * 100, 5)}%`,
+                        backgroundColor: item.color,
+                      }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+
+        <section className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[0_1px_3px_rgba(0,0,0,0.08)] dark:border-[var(--surface3)] dark:bg-[var(--surface)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.5)]">
+          <div className="mb-5 flex items-center justify-between">
+            <h2 className="text-base font-semibold text-[var(--text-primary)] dark:text-[var(--text-primary)]">System Impact Summary</h2>
+            <span className="rounded-md border border-[var(--border)] bg-[var(--surface2)] px-2 py-0.5 text-xs text-[var(--text-secondary)] dark:border-[var(--surface3)] dark:bg-[var(--surface3)] dark:text-[var(--text-muted)]">
+              {interpretationEvents.length} high-impact events
+            </span>
+          </div>
+
+          {interpretationSummary.length > 0 && (
+            <ul className="mb-4 max-h-[140px] overflow-y-auto pr-1 space-y-2 scrollbar-thin scrollbar-thumb-[var(--surface3)] scrollbar-track-transparent">
+              {interpretationSummary.map((line, idx) => (
+                <li key={idx} className="text-sm leading-6 text-[var(--text-secondary)] dark:text-[var(--text-secondary)]">
+                  • {line}
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {interpretationEvents.length === 0 ? (
+            <p className="text-[var(--text-secondary)] dark:text-[var(--text-muted)]">No representative high-impact events available</p>
+          ) : (
+            <div className="max-h-[320px] overflow-y-auto pr-1 space-y-3 scrollbar-thin scrollbar-thumb-[var(--surface3)] scrollbar-track-transparent">
+              {interpretationEvents.map((event, idx) => (
+                <div key={`${event.hash || idx}`} className="rounded-lg border border-[var(--border)] bg-[var(--surface2)] p-3 dark:border-[var(--surface3)] dark:bg-[var(--surface3)]">
+                  <p className="text-xs text-[var(--text-secondary)] dark:text-[var(--text-muted)]">
+                    {new Date(event.date).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })}
+                  </p>
+                  <p className="mt-1 text-sm font-medium text-[var(--text-primary)] dark:text-[var(--text-primary)]">{event.message}</p>
+                  {Array.isArray(event.categories) && event.categories.length > 0 && (
+                    <p className="mt-1 text-xs text-[var(--text-secondary)] dark:text-[var(--text-muted)]">
+                      {event.categories.map(formatCategoryLabel).join(' • ')}
+                    </p>
+                  )}
+                  {event.impactSummary && (
+                    <p className="mt-1 text-xs leading-5 text-[var(--text-secondary)] dark:text-[var(--text-secondary)]">{event.impactSummary}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
       </div>
 
       {/* Architectural + Stabilization Insights */}
