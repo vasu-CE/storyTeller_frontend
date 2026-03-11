@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { ArrowLeft, BarChart3, BookOpen, Clock, Milestone, Users } from 'lucide-react'
+import { ArrowLeft, BarChart3, BookOpen, Clock, MessageSquare, Milestone, Users } from 'lucide-react'
 import NarrativePanel from '../components/result/NarrativePanel'
 import Timeline from '../components/result/Timeline'
 import MilestoneList from '../components/result/MilestoneList'
 import ContributorPanel from '../components/result/ContributorPanel'
 import AnalyticsPanel from '../components/result/AnalyticsPanel'
+import ChatPanel from '../components/ChatPanel'
 import { Button } from '../components/ui/button'
 
 const tabs = [
@@ -13,8 +14,21 @@ const tabs = [
   { id: 'timeline', label: 'Timeline', icon: Clock },
   { id: 'milestones', label: 'Milestones', icon: Milestone },
   { id: 'contributors', label: 'Contributors', icon: Users },
+  { id: 'chat', label: 'Chat', icon: MessageSquare },
   { id: 'analytics', label: 'Analytics', icon: BarChart3 },
 ]
+
+function getRepoName(repoUrl) {
+  const normalized = String(repoUrl || '').trim().replace(/\.git$/i, '')
+
+  if (!normalized) {
+    return 'this repository'
+  }
+
+  return normalized
+    .replace(/^https?:\/\/(www\.)?github\.com\//i, '')
+    .replace(/^https?:\/\/(www\.)?gitlab\.com\//i, '')
+}
 
 function ResultPage() {
   const location = useLocation()
@@ -22,14 +36,15 @@ function ResultPage() {
   const [activeTab, setActiveTab] = useState('narrative')
 
   const data = location.state?.data
-  const repoUrl = location.state?.repoUrl
+  const repoUrl = location.state?.repoUrl || data?.repository?.url || data?.repoMeta?.url || ''
 
   if (!data) {
     navigate('/')
     return null
   }
 
-  const { narrative, phases, milestones, contributors } = data
+  const { narrative, phases, milestones, contributors, sessionId } = data
+  const repoName = getRepoName(repoUrl)
 
   return (
     <div className="min-h-screen bg-[#f5f7fb] px-4 pb-12 pt-6 text-[#6f768d] dark:bg-[#0f1117] dark:text-[#9aa0b8]">
@@ -86,6 +101,15 @@ function ResultPage() {
           {activeTab === 'timeline' && <Timeline phases={phases} />}
           {activeTab === 'milestones' && <MilestoneList milestones={milestones} />}
           {activeTab === 'contributors' && <ContributorPanel contributors={contributors} />}
+          {activeTab === 'chat' && (
+            sessionId ? (
+              <ChatPanel sessionId={sessionId} repoName={repoName} />
+            ) : (
+              <div className="rounded-xl border border-[#d8deea] bg-[#f8f9fc] p-6 text-[#191c26] dark:border-[#2e3142] dark:bg-[#21242f] dark:text-[#eaeaf0]">
+                Analysis session expired. Please re-analyze the repository.
+              </div>
+            )
+          )}
           {activeTab === 'analytics' && <AnalyticsPanel data={data} compact />}
         </div>
       </div>

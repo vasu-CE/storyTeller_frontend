@@ -16,6 +16,16 @@ export function getAnalyzeStreamUrl(repoUrl) {
   return url.toString()
 }
 
+export async function sendChatMessage(sessionId, message, history) {
+  try {
+    const response = await axios.post(getApiUrl('/chat'), { sessionId, message, history })
+    return response.data.reply
+  } catch (error) {
+    const messageText = error?.response?.data?.error || 'Request failed'
+    throw new Error(messageText)
+  }
+}
+
 export const repoSummaryClient = {
   /**
    * Fetch summary for a repository
