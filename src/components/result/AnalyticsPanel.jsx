@@ -68,13 +68,16 @@ function AnalyticsPanel({ data }) {
   const phases = Array.isArray(data.phases) ? data.phases : []
   const milestones = Array.isArray(data.milestones) ? data.milestones : []
   const classification = data.classification || {}
+  const architecturalChanges = Array.isArray(data.architecturalChanges) ? data.architecturalChanges : []
+  const stabilizationPeriods = Array.isArray(data.stabilizationPeriods) ? data.stabilizationPeriods : []
+  const velocityData = Array.isArray(data.velocityData) ? data.velocityData : []
   const contributors = Array.isArray(data.contributors?.contributors)
     ? data.contributors.contributors
     : Array.isArray(data.contributors)
       ? data.contributors
       : []
 
-  const totalCommits = toNumber(classification.total || data.repository?.totalCommits)
+  const totalCommits = toNumber(data.repository?.totalCommits)
   const topContributors = contributors.slice(0, 6)
   const totalContribCommits = contributors.reduce((s, c) => s + toNumber(c.commits), 0)
 
@@ -88,6 +91,11 @@ function AnalyticsPanel({ data }) {
     test: '#10b981',
     ci: '#8b5cf6',
     docs: '#06b6d4',
+    arch: '#d946ef',
+    security: '#ef4444',
+    breaking: '#f97316',
+    deps: '#0ea5e9',
+    style: '#64748b',
     other: '#a855f7',
   }
   const commitTypeRows = Object.entries(classification)
@@ -143,7 +151,10 @@ function AnalyticsPanel({ data }) {
     ? data.contributors.coreContributors.length
     : data.contributors?.insights?.coreTeamSize || Math.ceil(contributors.length * 0.67)
   const occasionalCount = data.contributors?.insights?.occasionalContributors || Math.max(0, contributors.length - coreCount)
-  const branches = data.repository?.branches
+  const branches = Array.isArray(data.repository?.branches)
+    ? data.repository.branches.length
+    : toNumber(data.repository?.branches)
+  const busFactor = toNumber(data.contributors?.busFactor)
 
   const statCards = [
     {
@@ -216,8 +227,10 @@ function AnalyticsPanel({ data }) {
     },
     {
       title: 'Bus Factor',
-      description: `~${Math.round(busFactorPercent)}% of commits from a single contributor — ${busFactorPercent > 60 ? 'moderate' : 'low'} risk`,
-      status: busFactorPercent > 70 ? 'Risk' : busFactorPercent > 50 ? 'Monitor' : 'Good',
+      description: busFactor > 0
+        ? `Bus factor is ${busFactor} — ${busFactor === 1 ? 'high knowledge concentration' : 'distributed ownership'}`
+        : `~${Math.round(busFactorPercent)}% of commits from a single contributor — ${busFactorPercent > 60 ? 'moderate' : 'low'} risk`,
+      status: busFactor === 1 ? 'Risk' : busFactor === 2 ? 'Monitor' : 'Good',
     },
     {
       title: 'Feature Growth',
@@ -249,6 +262,81 @@ function AnalyticsPanel({ data }) {
           </div>
         ))}
       </div>
+
+      {/* Architectural + Stabilization Insights */}
+      <div className="grid gap-6 xl:grid-cols-2">
+        <section className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[0_1px_3px_rgba(0,0,0,0.08)] dark:border-[var(--surface3)] dark:bg-[var(--surface)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.5)]">
+          <div className="mb-5 flex items-center justify-between">
+            <h2 className="text-base font-semibold text-[var(--text-primary)] dark:text-[var(--text-primary)]">Architectural Changes</h2>
+            <span className="rounded-md border border-[var(--border)] bg-[var(--surface2)] px-2 py-0.5 text-xs text-[var(--text-secondary)] dark:border-[var(--surface3)] dark:bg-[var(--surface3)] dark:text-[var(--text-muted)]">
+              {architecturalChanges.length} detected
+            </span>
+          </div>
+          {architecturalChanges.length === 0 ? (
+            <p className="text-[var(--text-secondary)] dark:text-[var(--text-muted)]">No major architectural events detected</p>
+          ) : (
+            <div className="space-y-3">
+              {architecturalChanges.slice(0, 6).map((change, idx) => (
+                <div key={`${change.hash || idx}`} className="rounded-lg border border-[var(--border)] bg-[var(--surface2)] p-3 dark:border-[var(--surface3)] dark:bg-[var(--surface3)]">
+                  <p className="text-xs text-[var(--text-secondary)] dark:text-[var(--text-muted)]">
+                    {new Date(change.date).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })}
+                  </p>
+                  <p className="mt-1 text-sm font-medium text-[var(--text-primary)] dark:text-[var(--text-primary)]">{change.message}</p>
+                  <p className="mt-1 text-xs text-[var(--text-secondary)] dark:text-[var(--text-muted)]">
+                    {change.filesChanged} files · +{change.insertions} / -{change.deletions}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+
+        <section className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[0_1px_3px_rgba(0,0,0,0.08)] dark:border-[var(--surface3)] dark:bg-[var(--surface)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.5)]">
+          <div className="mb-5 flex items-center justify-between">
+            <h2 className="text-base font-semibold text-[var(--text-primary)] dark:text-[var(--text-primary)]">Stabilization Periods</h2>
+            <span className="rounded-md border border-[var(--border)] bg-[var(--surface2)] px-2 py-0.5 text-xs text-[var(--text-secondary)] dark:border-[var(--surface3)] dark:bg-[var(--surface3)] dark:text-[var(--text-muted)]">
+              {stabilizationPeriods.length} periods
+            </span>
+          </div>
+          {stabilizationPeriods.length === 0 ? (
+            <p className="text-[var(--text-secondary)] dark:text-[var(--text-muted)]">No strong stabilization periods detected</p>
+          ) : (
+            <div className="space-y-3">
+              {stabilizationPeriods.map((period, idx) => (
+                <div key={idx} className="rounded-lg border border-[var(--border)] bg-[var(--surface2)] p-3 dark:border-[var(--surface3)] dark:bg-[var(--surface3)]">
+                  <p className="text-sm font-medium text-[var(--text-primary)] dark:text-[var(--text-primary)]">
+                    {new Date(period.start).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })}
+                    {' → '}
+                    {new Date(period.end).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })}
+                  </p>
+                  <p className="mt-1 text-xs text-[var(--text-secondary)] dark:text-[var(--text-muted)]">{period.description}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+      </div>
+
+      {/* Velocity Peaks */}
+      {velocityData.length > 0 && (
+        <section className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[0_1px_3px_rgba(0,0,0,0.08)] dark:border-[var(--surface3)] dark:bg-[var(--surface)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.5)]">
+          <div className="mb-5 flex items-center justify-between">
+            <h2 className="text-base font-semibold text-[var(--text-primary)] dark:text-[var(--text-primary)]">Monthly Velocity Peaks</h2>
+            <span className="rounded-md border border-[var(--border)] bg-[var(--surface2)] px-2 py-0.5 text-xs text-[var(--text-secondary)] dark:border-[var(--surface3)] dark:bg-[var(--surface3)] dark:text-[var(--text-muted)]">
+              {velocityData.length} months
+            </span>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {[...velocityData].sort((a, b) => b.commits - a.commits).slice(0, 6).map((v) => (
+              <div key={v.month} className="rounded-lg border border-[var(--border)] bg-[var(--surface2)] p-3 dark:border-[var(--surface3)] dark:bg-[var(--surface3)]">
+                <p className="text-xs text-[var(--text-secondary)] dark:text-[var(--text-muted)]">{v.month}</p>
+                <p className="mt-1 text-lg font-semibold text-[var(--text-primary)] dark:text-[var(--text-primary)]">{v.commits} commits</p>
+                <p className="text-xs text-[var(--text-secondary)] dark:text-[var(--text-muted)]">{v.contributors} contributors · net {v.netLines >= 0 ? '+' : ''}{v.netLines} lines</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Commit Classification + Commit Velocity */}
       <div className="grid gap-6 xl:grid-cols-2">

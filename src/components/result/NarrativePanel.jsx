@@ -1,4 +1,4 @@
-import { GitCommit, Users, CalendarClock } from 'lucide-react'
+import { GitCommit, Users, Building2, Workflow, Wrench } from 'lucide-react'
 
 function NarrativePanel({ narrative, repository, contributors, phases, classification }) {
   const toArray = (value) => {
@@ -31,9 +31,25 @@ function NarrativePanel({ narrative, repository, contributors, phases, classific
     return <div className="text-[var(--text-secondary)] dark:text-[var(--text-muted)]">No narrative data available</div>
   }
 
-  const { opening, middle_sections, turning_points, current_state, project_character } = narrative
-  const middleSectionsList = toArray(middle_sections)
+  const {
+    opening,
+    foundation_phase,
+    growth_narrative,
+    architectural_evolution,
+    collaboration_story,
+    technical_decisions,
+    stabilization_narrative,
+    middle_sections,
+    turning_points,
+    current_state,
+    project_character,
+  } = narrative
+
+  const middleSectionsList = toArray(growth_narrative).length > 0
+    ? toArray(growth_narrative)
+    : toArray(middle_sections)
   const turningPointsList = toArray(turning_points)
+  const technicalDecisionsList = toArray(technical_decisions)
 
   const contributorList = Array.isArray(contributors?.contributors)
     ? contributors.contributors
@@ -42,7 +58,7 @@ function NarrativePanel({ narrative, repository, contributors, phases, classific
       : []
 
   // Build chapters: one per phase, paired with narrative text
-  const narrativeTexts = [opening, ...middleSectionsList].filter(Boolean)
+  const narrativeTexts = [opening, foundation_phase, ...middleSectionsList].filter(Boolean)
   const phasesArr = Array.isArray(phases) ? phases : []
 
   const chapters = phasesArr.map((phase, index) => ({
@@ -61,7 +77,7 @@ function NarrativePanel({ narrative, repository, contributors, phases, classific
     { label: 'Docs', key: 'docs', color: '#3b82f6' },
     { label: 'Chores', key: 'chore', color: '#6b7280' },
   ]
-  const total = classification?.total || 1
+  const total = classification?.total || repository?.totalCommits || 1
   const activityRows = classDefs
     .map(({ label, key, color }) => ({
       label,
@@ -109,6 +125,64 @@ function NarrativePanel({ narrative, repository, contributors, phases, classific
             )}
           </div>
         ))}
+
+        {/* Architectural Evolution */}
+        {architectural_evolution && (
+          <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-8 shadow-[0_1px_3px_rgba(0,0,0,0.08)] dark:border-[var(--surface3)] dark:bg-[var(--surface)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.5)]">
+            <div className="mb-5 border-b border-[var(--border)] pb-4 dark:border-[var(--border)]">
+              <h2 className="flex items-center gap-2 text-xl font-semibold text-[var(--text-primary)] dark:text-[var(--text-primary)]">
+                <Building2 className="h-5 w-5 text-[var(--accent)]" />
+                Architectural Evolution
+              </h2>
+            </div>
+            <p className="leading-7 text-[var(--text-secondary)] dark:text-[var(--text-secondary)]">{architectural_evolution}</p>
+          </div>
+        )}
+
+        {/* Collaboration Story */}
+        {collaboration_story && (
+          <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-8 shadow-[0_1px_3px_rgba(0,0,0,0.08)] dark:border-[var(--surface3)] dark:bg-[var(--surface)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.5)]">
+            <div className="mb-5 border-b border-[var(--border)] pb-4 dark:border-[var(--border)]">
+              <h2 className="flex items-center gap-2 text-xl font-semibold text-[var(--text-primary)] dark:text-[var(--text-primary)]">
+                <Users className="h-5 w-5 text-[var(--accent)]" />
+                Collaboration Dynamics
+              </h2>
+            </div>
+            <p className="leading-7 text-[var(--text-secondary)] dark:text-[var(--text-secondary)]">{collaboration_story}</p>
+          </div>
+        )}
+
+        {/* Technical Decisions */}
+        {technicalDecisionsList.length > 0 && (
+          <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-8 shadow-[0_1px_3px_rgba(0,0,0,0.08)] dark:border-[var(--surface3)] dark:bg-[var(--surface)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.5)]">
+            <div className="mb-5 border-b border-[var(--border)] pb-4 dark:border-[var(--border)]">
+              <h2 className="flex items-center gap-2 text-xl font-semibold text-[var(--text-primary)] dark:text-[var(--text-primary)]">
+                <Workflow className="h-5 w-5 text-[var(--accent)]" />
+                Inferred Technical Decisions
+              </h2>
+            </div>
+            <ul className="space-y-4">
+              {technicalDecisionsList.map((item, index) => (
+                <li key={index} className="border-l-[3px] border-[var(--accent)] pl-4">
+                  <p className="leading-6 text-[var(--text-secondary)] dark:text-[var(--text-secondary)]">{item}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* Stabilization */}
+        {stabilization_narrative && (
+          <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-8 shadow-[0_1px_3px_rgba(0,0,0,0.08)] dark:border-[var(--surface3)] dark:bg-[var(--surface)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.5)]">
+            <div className="mb-5 border-b border-[var(--border)] pb-4 dark:border-[var(--border)]">
+              <h2 className="flex items-center gap-2 text-xl font-semibold text-[var(--text-primary)] dark:text-[var(--text-primary)]">
+                <Wrench className="h-5 w-5 text-[var(--green)]" />
+                Stabilization Pattern
+              </h2>
+            </div>
+            <p className="leading-7 text-[var(--text-secondary)] dark:text-[var(--text-secondary)]">{stabilization_narrative}</p>
+          </div>
+        )}
 
         {/* Turning Points */}
         {turningPointsList.length > 0 && (

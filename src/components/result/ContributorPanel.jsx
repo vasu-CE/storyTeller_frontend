@@ -16,6 +16,10 @@ function ContributorPanel({ contributors }) {
   const totalAdditions = contributorList.reduce((sum, c) => sum + (c.additions || c.insertions || 0), 0)
   const totalDeletions = contributorList.reduce((sum, c) => sum + (c.deletions || 0), 0)
   const totalContributors = contributors?.totalContributors || contributorList.length
+  const busFactor = contributors?.busFactor
+  const collaborationPeriods = Array.isArray(contributors?.collaborationPeriods)
+    ? contributors.collaborationPeriods
+    : []
 
   return (
     <div className="space-y-8">
@@ -58,6 +62,37 @@ function ContributorPanel({ contributors }) {
           <p className="text-xl font-semibold text-[var(--text-primary)] dark:text-[var(--text-primary)]">{totalDeletions.toLocaleString()}</p>
         </div>
       </div>
+
+      {(busFactor || collaborationPeriods.length > 0) && (
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          {busFactor ? (
+            <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.08)] dark:border-[var(--border)] dark:bg-[var(--surface)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.4)]">
+              <p className="text-[11px] uppercase tracking-wide text-[var(--text-secondary)] dark:text-[var(--text-muted)]">Bus Factor</p>
+              <p className="mt-1 text-2xl font-semibold text-[var(--text-primary)] dark:text-[var(--text-primary)]">{busFactor}</p>
+              <p className="mt-2 text-sm text-[var(--text-secondary)] dark:text-[var(--text-muted)]">
+                {busFactor === 1
+                  ? 'Knowledge is concentrated in one primary contributor.'
+                  : `At least ${busFactor} contributors are needed to cover half of commit history.`}
+              </p>
+            </div>
+          ) : null}
+
+          {collaborationPeriods.length > 0 ? (
+            <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.08)] dark:border-[var(--border)] dark:bg-[var(--surface)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.4)]">
+              <p className="text-[11px] uppercase tracking-wide text-[var(--text-secondary)] dark:text-[var(--text-muted)]">Collaboration Peaks</p>
+              <ul className="mt-2 space-y-1.5 text-sm text-[var(--text-secondary)] dark:text-[var(--text-muted)]">
+                {collaborationPeriods.slice(0, 5).map((period) => (
+                  <li key={period.month}>
+                    <span className="font-medium text-[var(--text-primary)] dark:text-[var(--text-primary)]">{period.month}</span>
+                    {' · '}
+                    {period.activeContributors} active contributors, {period.totalCommits} commits
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+        </div>
+      )}
 
       {/* Contributors List */}
       <div className="space-y-3">

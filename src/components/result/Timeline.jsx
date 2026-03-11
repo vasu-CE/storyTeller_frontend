@@ -1,21 +1,33 @@
 import { Calendar, GitCommit, Smile, Meh, Frown, AlertCircle } from 'lucide-react'
 
 const moodConfig = {
-  positive: {
+  building: {
+    color: 'text-blue-600 dark:text-blue-300',
+    icon: Smile
+  },
+  growing: {
     color: 'text-[var(--green)]',
     icon: Smile
+  },
+  stabilizing: {
+    color: 'text-emerald-600 dark:text-emerald-300',
+    icon: CheckCircle
+  },
+  refactoring: {
+    color: 'text-amber-600 dark:text-amber-300',
+    icon: Frown
+  },
+  pivoting: {
+    color: 'text-rose-600 dark:text-rose-300',
+    icon: AlertCircle
+  },
+  experimenting: {
+    color: 'text-violet-600 dark:text-violet-300',
+    icon: AlertCircle
   },
   neutral: {
     color: 'text-[var(--text-muted)]',
     icon: Meh
-  },
-  negative: {
-    color: 'text-[var(--green)]',
-    icon: Frown
-  },
-  challenging: {
-    color: 'text-[var(--accent)]',
-    icon: AlertCircle
   },
 }
 

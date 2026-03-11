@@ -1,6 +1,12 @@
 import { Flag, Trophy, Zap, Award, Target } from 'lucide-react'
 
 const typeConfig = {
+  launch: {
+    color: 'text-indigo-600 dark:text-indigo-300',
+    bg: 'bg-indigo-50 dark:bg-indigo-950/30',
+    border: 'border-indigo-200 dark:border-indigo-900/70',
+    icon: Flag
+  },
   major: {
     color: 'text-purple-600 dark:text-purple-300',
     bg: 'bg-purple-50 dark:bg-purple-950/30',
@@ -12,6 +18,42 @@ const typeConfig = {
     bg: 'bg-blue-50 dark:bg-blue-950/30',
     border: 'border-blue-200 dark:border-blue-900/70',
     icon: Zap
+  },
+  architecture: {
+    color: 'text-fuchsia-600 dark:text-fuchsia-300',
+    bg: 'bg-fuchsia-50 dark:bg-fuchsia-950/30',
+    border: 'border-fuchsia-200 dark:border-fuchsia-900/70',
+    icon: Trophy
+  },
+  infrastructure: {
+    color: 'text-cyan-600 dark:text-cyan-300',
+    bg: 'bg-cyan-50 dark:bg-cyan-950/30',
+    border: 'border-cyan-200 dark:border-cyan-900/70',
+    icon: Target
+  },
+  quality: {
+    color: 'text-emerald-600 dark:text-emerald-300',
+    bg: 'bg-emerald-50 dark:bg-emerald-950/30',
+    border: 'border-emerald-200 dark:border-emerald-900/70',
+    icon: Award
+  },
+  growth: {
+    color: 'text-sky-600 dark:text-sky-300',
+    bg: 'bg-sky-50 dark:bg-sky-950/30',
+    border: 'border-sky-200 dark:border-sky-900/70',
+    icon: Zap
+  },
+  pivot: {
+    color: 'text-rose-600 dark:text-rose-300',
+    bg: 'bg-rose-50 dark:bg-rose-950/30',
+    border: 'border-rose-200 dark:border-rose-900/70',
+    icon: Trophy
+  },
+  security: {
+    color: 'text-red-600 dark:text-red-300',
+    bg: 'bg-red-50 dark:bg-red-950/30',
+    border: 'border-red-200 dark:border-red-900/70',
+    icon: Award
   },
   release: {
     color: 'text-green-600 dark:text-green-300',
@@ -54,20 +96,20 @@ function MilestoneList({ milestones }) {
           return (
             <div
               key={index}
-              className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.08)] dark:border-[var(--border)] dark:bg-[var(--surface)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.4)]"
+              className={`rounded-xl border p-5 shadow-[0_1px_3px_rgba(0,0,0,0.08)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.4)] ${config.border} ${config.bg}`}
             >
               <div className="border-l-[3px] border-[var(--green)] pl-4">
                 {/* Header */}
                 <div className="mb-3 flex items-start gap-3">
-                  <div className="rounded-lg border border-[var(--border)] bg-[var(--surface2)] p-2 dark:border-[var(--border)] dark:bg-[var(--surface3)]">
-                    <Icon className="h-5 w-5 text-[var(--accent)]" />
+                  <div className={`rounded-lg border p-2 ${config.border} bg-[var(--surface)]/80`}>
+                    <Icon className={`h-5 w-5 ${config.color}`} />
                   </div>
                   <div className="flex-1">
                     <h3 className="leading-tight text-[18px] font-semibold text-[var(--text-primary)] dark:text-[var(--text-primary)]">
                       {milestone.title || `Milestone ${index + 1}`}
                     </h3>
                   </div>
-                  <span className="rounded-md bg-[var(--surface2)] px-2 py-1 text-[11px] text-[var(--green)] dark:bg-[var(--surface3)]">
+                  <span className={`rounded-md px-2 py-1 text-[11px] ${config.color} ${config.bg}`}>
                     {milestone.date || type}
                   </span>
                 </div>
