@@ -1,4 +1,4 @@
-import { Calendar, GitCommit, Smile, Meh, Frown, AlertCircle } from 'lucide-react'
+import { Calendar, GitCommit, Smile, Meh, Frown, AlertCircle, CheckCircle } from 'lucide-react'
 
 const moodConfig = {
   building: {

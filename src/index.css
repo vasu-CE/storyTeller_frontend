@@ -214,8 +214,10 @@
   --accent: #7c6af7;
   --accent-dim: rgba(124, 106, 247, 0.15);
   --text-primary: #f0eff8;
-  --text-secondary: #8888a0;
-  --text-muted: #4a4a60;
+  /* --text-secondary: #8888a0;
+  --text-muted: #4a4a60; */
+   --text-secondary: #bcc2e0;
+  --text-muted: #8f97bb;
   --green: #4ade80;
   --amber: #fbbf24;
   --red: #fb7185;

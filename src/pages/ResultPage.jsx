@@ -92,7 +92,7 @@ function ResultPage({ theme = 'light', onToggleTheme = () => {} }) {
             Analyze Another Repository
           </Button>
           {/* <div className="flex min-w-0 flex-1 items-center truncate rounded-lg border border-[var(--border)] bg-[var(--surface2)] px-4 py-2 dark:border-[var(--surface3)] dark:bg-[var(--surface2)]"> */}
-            <span className="truncate text-sm text-blue-600 cursor-pointer" onClick={() => window.open(repoUrl, '_blank')}>
+            <span className="truncate text-sm text-blue-600 dark:text-blue-300 cursor-pointer" onClick={() => window.open(repoUrl, '_blank')}>
               {repoUrl}
             </span>
             <div className="ml-auto flex items-center gap-3">
