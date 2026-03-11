@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { MessageSquare, RotateCcw, SendHorizontal } from 'lucide-react'
 import { sendChatMessage } from '../services/api'
 import { Button } from './ui/button'
+import { Input } from './ui/input'
 
 const STARTER_QUESTIONS = [
   'Who contributed the most to this project?',
@@ -272,9 +273,10 @@ function ChatPanel({ sessionId, repoName, projectCharacter, span, totalCommits, 
 
         {/* Input */}
         <div className="border-t border-[var(--border)] px-5 py-4 dark:border-[var(--surface3)]">
-          <div className="flex items-end gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface2)] px-4 py-3 focus-within:border-[var(--accent)] dark:border-[var(--surface3)] dark:bg-[var(--surface2)] dark:focus-within:border-[var(--accent)]">
-            <textarea
+          <div className="flex items-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface2)] px-3 py-2 focus-within:border-[var(--accent)] dark:border-[var(--surface3)] dark:bg-[var(--surface2)] dark:focus-within:border-[var(--accent)]">
+            <Input
               ref={inputRef}
+              type="text"
               value={inputValue}
               onChange={(event) => {
                 setInputValue(event.target.value)
@@ -287,9 +289,7 @@ function ChatPanel({ sessionId, repoName, projectCharacter, span, totalCommits, 
                 }
               }}
               placeholder="Ask anything about this repository..."
-              rows={1}
-              className="flex-1 resize-none bg-transparent text-sm text-[var(--text-primary)] outline-none placeholder:text-[var(--text-muted)] dark:text-[var(--text-primary)]"
-              style={{ maxHeight: '120px', overflowY: 'auto' }}
+              className="h-10 flex-1 border-0 bg-transparent px-2 text-sm text-[var(--text-primary)] shadow-none focus-visible:ring-0 dark:text-[var(--text-primary)]"
             />
             <Button
               type="button"

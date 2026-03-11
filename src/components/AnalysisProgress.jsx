@@ -43,7 +43,7 @@ function AnalysisProgress({ progress }) {
   const progressPercent = getPercent(progress)
 
   return (
-    <div className="rounded-3xl border border-[var(--border-bright)] bg-[rgba(15,17,28,0.95)] p-6 text-[var(--text-primary)] shadow-[0_16px_40px_rgba(0,0,0,0.35)] sm:p-7">
+    <div className="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-6 text-[var(--text-primary)] shadow-[0_10px_28px_rgba(26,34,56,0.1)] dark:border-[var(--border-bright)] dark:bg-[var(--surface)] dark:shadow-[0_16px_40px_rgba(0,0,0,0.35)] sm:p-7">
       <div className="mb-6 flex items-start justify-between gap-4">
         <div>
           <h2 className="text-[44px] leading-[1.05] font-medium text-[var(--text-primary)]">Analyzing Repository</h2>
@@ -67,7 +67,7 @@ function AnalysisProgress({ progress }) {
           <span className="font-mono text-[12px] uppercase tracking-[0.12em] text-[var(--text-muted)]">Progress</span>
           <span className="font-mono text-[12px] text-[var(--text-muted)]">{progressPercent}%</span>
         </div>
-        <div className="h-[6px] w-full overflow-hidden rounded-full bg-[rgba(255,255,255,0.08)]">
+        <div className="h-[6px] w-full overflow-hidden rounded-full bg-[var(--surface3)]">
           <div
             className="h-full rounded-full bg-[var(--accent)] transition-[width] duration-400 ease-[ease]"
             style={{ width: `${progressPercent}%` }}

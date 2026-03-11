@@ -56,11 +56,11 @@ function AnalyzingPage() {
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
         <AnalysisProgress progress={progress} />
 
-        <div className="rounded-2xl border border-[var(--border-bright)] bg-[rgba(15,17,28,0.92)] p-5 shadow-[0_12px_30px_rgba(0,0,0,0.3)] dark:border-[var(--border-bright)] dark:bg-[rgba(15,17,28,0.92)]">
+        <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[0_8px_22px_rgba(26,34,56,0.08)] dark:border-[var(--border-bright)] dark:bg-[var(--surface)] dark:shadow-[0_12px_30px_rgba(0,0,0,0.3)]">
           <p className="mb-2 font-mono text-[11px] uppercase tracking-[0.09em] text-[var(--text-muted)]">Repository</p>
           <p className="break-all text-sm text-[var(--text-secondary)] dark:text-[var(--text-secondary)]">{repoUrl}</p>
           {forceSync && (
-            <p className="mt-3 text-sm text-amber-300">Synchronizing repository data with the latest remote HEAD...</p>
+            <p className="mt-3 text-sm text-[var(--amber)]">Synchronizing repository data with the latest remote HEAD...</p>
           )}
           {!isLoading && !error && (
             <p className="mt-3 text-sm text-[var(--text-secondary)] dark:text-[var(--text-secondary)]">Preparing results...</p>

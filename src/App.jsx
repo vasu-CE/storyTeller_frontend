@@ -1,11 +1,27 @@
 
 import { useEffect, useState } from 'react'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import InputPage from './pages/InputPage'
 import AnalyzingPage from './pages/AnalyzingPage'
 import ResultPage from './pages/ResultPage'
 import ThemeToggle from './components/ThemeToggle'
 import './App.css'
+
+function AppRoutes({ theme, toggleTheme }) {
+  const location = useLocation()
+  const isResultPage = location.pathname === '/result'
+
+  return (
+    <>
+      {!isResultPage && <ThemeToggle theme={theme} onToggle={toggleTheme} />}
+      <Routes>
+        <Route path="/" element={<InputPage />} />
+        <Route path="/analyzing" element={<AnalyzingPage />} />
+        <Route path="/result" element={<ResultPage theme={theme} onToggleTheme={toggleTheme} />} />
+      </Routes>
+    </>
+  )
+}
 
 function App() {
   const [theme, setTheme] = useState(() => {
@@ -30,12 +46,7 @@ function App() {
 
   return (
     <BrowserRouter>
-      <ThemeToggle theme={theme} onToggle={toggleTheme} />
-      <Routes>
-        <Route path="/" element={<InputPage />} />
-        <Route path="/analyzing" element={<AnalyzingPage />} />
-        <Route path="/result" element={<ResultPage />} />
-      </Routes>
+      <AppRoutes theme={theme} toggleTheme={toggleTheme} />
     </BrowserRouter>
   )
 }

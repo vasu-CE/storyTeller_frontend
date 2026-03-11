@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@import "@fontsource/poppins";
+@import "@fontsource/dm-sans"; 
 @import "@fontsource-variable/geist";
 
 @custom-variant dark (&:is(.dark *));
@@ -75,7 +77,7 @@
 }
 
 @theme inline {
-  --font-sans: 'DM Sans', sans-serif;
+  --font-sans: 'Poppins', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
     --color-sidebar-ring: var(--sidebar-ring);
     --color-sidebar-border: var(--sidebar-border);
@@ -126,7 +128,7 @@
     @apply text-foreground;
     background: var(--bg);
     color: var(--text-secondary);
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Poppins', sans-serif;
     font-size: 15px;
     line-height: 1.7;
     -webkit-font-smoothing: antialiased;
@@ -186,14 +188,31 @@
 }
 
 :root {
+  --bg: #f6f7fb;
+  --surface: #ffffff;
+  --surface2: #f2f4fb;
+  --surface3: #e9ecf8;
+  --border: rgba(26, 34, 56, 0.12);
+  --border-bright: rgba(26, 34, 56, 0.22);
+  --accent: #5d4be8;
+  --accent-dim: rgba(93, 75, 232, 0.12);
+  --text-primary: #1c2440;
+  --text-secondary: #4a5676;
+  --text-muted: #7b86a3;
+  --green: #16a34a;
+  --amber: #d97706;
+  --red: #e11d48;
+}
+
+.dark {
   --bg: #0a0a0f;
   --surface: #111118;
   --surface2: #16161f;
   --surface3: #1c1c28;
-  --border: rgba(255,255,255,0.06);
-  --border-bright: rgba(255,255,255,0.12);
+  --border: rgba(255, 255, 255, 0.06);
+  --border-bright: rgba(255, 255, 255, 0.12);
   --accent: #7c6af7;
-  --accent-dim: rgba(124,106,247,0.15);
+  --accent-dim: rgba(124, 106, 247, 0.15);
   --text-primary: #f0eff8;
   --text-secondary: #8888a0;
   --text-muted: #4a4a60;
@@ -212,7 +231,7 @@ body {
   position: relative;
   background: var(--bg);
   color: var(--text-secondary);
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Poppins', sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -258,7 +277,7 @@ p,
 span,
 li,
 a {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Poppins', sans-serif;
 }
 
 .mono,
@@ -266,6 +285,22 @@ code,
 pre,
 .mono-label {
   font-family: 'JetBrains Mono', monospace;
+}
+
+.result-page,
+.result-page h1,
+.result-page h2,
+.result-page h3,
+.result-page h4,
+.result-page h5,
+.result-page h6,
+.result-page p,
+.result-page span,
+.result-page button,
+.result-page a,
+.result-page label,
+.result-page li {
+  font-family: 'DM sans', sans-serif !important;
 }
 
 .panel,
@@ -297,7 +332,7 @@ pre,
   border: none;
   border-radius: 10px;
   color: #fff;
-  font: 600 14px 'DM Sans', sans-serif;
+  font: 600 14px 'Poppins', sans-serif;
   box-shadow: 0 4px 20px rgba(124,106,247,0.35);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }

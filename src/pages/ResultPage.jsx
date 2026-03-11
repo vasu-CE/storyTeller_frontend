@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { AlertTriangle, ArrowLeft, BarChart3, BookOpen, Calendar, CheckCircle2, Clock, GitCommit, MessageSquare, Milestone, RefreshCw, Users } from 'lucide-react'
+import { AlertTriangle, ArrowLeft, BarChart3, BookOpen, Calendar, CheckCircle2, Clock, GitCommit, MessageSquare, Milestone, Moon, RefreshCw, Sun, Users } from 'lucide-react'
 import NarrativePanel from '../components/result/NarrativePanel'
 import Timeline from '../components/result/Timeline'
 import MilestoneList from '../components/result/MilestoneList'
@@ -30,7 +30,7 @@ function getRepoName(repoUrl) {
     .replace(/^https?:\/\/(www\.)?gitlab\.com\//i, '')
 }
 
-function ResultPage() {
+function ResultPage({ theme = 'light', onToggleTheme = () => {} }) {
   const location = useLocation()
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState('narrative')
@@ -79,7 +79,7 @@ function ResultPage() {
   const projectCharacter = narrative?.project_character || ''
 
   return (
-    <div className="min-h-screen bg-[var(--bg)] text-[var(--text-secondary)] dark:bg-[var(--bg)] dark:text-[var(--text-secondary)]">
+    <div className="result-page min-h-screen bg-[var(--bg)] text-[var(--text-secondary)] dark:bg-[var(--bg)] dark:text-[var(--text-secondary)]">
       {/* Sticky Top Navigation Bar */}
       <div className="sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--surface)]/90 backdrop-blur-md dark:border-[var(--surface3)] dark:bg-[var(--bg)]/95">
         <div className="flex items-center gap-3 px-6 py-3">
@@ -96,6 +96,17 @@ function ResultPage() {
               {repoUrl}
             </span>
             <div className="ml-auto flex items-center gap-3">
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                onClick={onToggleTheme}
+                className="rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--text-primary)] hover:bg-[var(--surface3)]"
+                aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
+                title={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
+              >
+                {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              </Button>
               <span
                 className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${
                   isStale
@@ -176,10 +187,10 @@ function ResultPage() {
             </div>
           </aside>
 
-          <section className="min-w-0 flex-1 px-4 pb-16 sm:px-6 lg:px-8">
+          <section className=" flex-1 pr-4">
 
             {/* Tabs */}
-            <div className="sticky top-14 z-40 mb-8 border-b border-[var(--border)] bg-[var(--bg)] dark:border-[var(--surface3)] dark:bg-[var(--bg)]">
+            <div className="sticky top-14 z-40 mb-4 border-b border-[var(--border)] bg-[var(--bg)] dark:border-[var(--surface3)] dark:bg-[var(--bg)]">
               <div className="flex ">
                 {tabs.map((tab) => (
                   <button
