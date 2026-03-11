@@ -10,9 +10,15 @@ function getApiUrl(path) {
   return `${window.location.origin}${API_BASE_URL}${path}`
 }
 
-export function getAnalyzeStreamUrl(repoUrl) {
+export function getAnalyzeStreamUrl(repoUrl, options = {}) {
+  const { forceSync = false } = options
   const url = new URL(getApiUrl('/analyze-stream'))
   url.searchParams.set('repoUrl', repoUrl)
+
+  if (forceSync) {
+    url.searchParams.set('forceSync', 'true')
+  }
+
   return url.toString()
 }
 
@@ -53,6 +59,17 @@ export const repoSummaryClient = {
       return response.data
     } catch (error) {
       return { status: 'error', message: error.message }
+    }
+  },
+
+  listRepositories: async () => {
+    try {
+      const response = await axios.get(getApiUrl('/repositories'))
+      return response.data.repositories || []
+    } catch (error) {
+      const message =
+        error?.response?.data?.message || error?.message || 'Failed to load stored repositories'
+      throw new Error(message)
     }
   },
 }

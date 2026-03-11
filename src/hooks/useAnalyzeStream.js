@@ -7,7 +7,8 @@ const INITIAL_PROGRESS = {
   percent: 0,
 }
 
-export function useAnalyzeStream(repoUrl) {
+export function useAnalyzeStream(repoUrl, options = {}) {
+  const { forceSync = false } = options
   const [progress, setProgress] = useState(() => INITIAL_PROGRESS)
   const [result, setResult] = useState(null)
   const [error, setError] = useState('')
@@ -18,7 +19,12 @@ export function useAnalyzeStream(repoUrl) {
       return undefined
     }
 
-    const eventSource = new EventSource(getAnalyzeStreamUrl(repoUrl))
+    setProgress(INITIAL_PROGRESS)
+    setResult(null)
+    setError('')
+    setIsLoading(true)
+
+    const eventSource = new EventSource(getAnalyzeStreamUrl(repoUrl, { forceSync }))
     let isClosedByApp = false
 
     eventSource.onmessage = (event) => {
@@ -66,7 +72,7 @@ export function useAnalyzeStream(repoUrl) {
       isClosedByApp = true
       eventSource.close()
     }
-  }, [repoUrl])
+  }, [forceSync, repoUrl])
 
   return { progress, result, error, isLoading }
 }

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { ArrowLeft, BarChart3, BookOpen, Calendar, Clock, GitCommit, MessageSquare, Milestone, Users } from 'lucide-react'
+import { AlertTriangle, ArrowLeft, BarChart3, BookOpen, Calendar, CheckCircle2, Clock, GitCommit, MessageSquare, Milestone, RefreshCw, Users } from 'lucide-react'
 import NarrativePanel from '../components/result/NarrativePanel'
 import Timeline from '../components/result/Timeline'
 import MilestoneList from '../components/result/MilestoneList'
@@ -46,6 +46,18 @@ function ResultPage() {
   const { narrative, phases, milestones, contributors, sessionId } = data
   const repoName = getRepoName(repoUrl)
   const repoShortName = repoName.split('/').pop() || repoName
+  const cache = data.cache || null
+  const isStale = cache?.syncStatus === 'stale'
+  const analysisSource = cache?.source === 'database' ? 'Loaded from database' : 'Fresh analysis'
+  const analyzedAtLabel = cache?.analyzedAt
+    ? new Date(cache.analyzedAt).toLocaleString(undefined, {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+      })
+    : 'Unknown'
 
   // Compute header stats
   const totalCommits = data.repository?.totalCommits || 0
@@ -83,6 +95,26 @@ function ResultPage() {
             <span className="truncate text-sm text-blue-600 cursor-pointer" onClick={() => window.open(repoUrl, '_blank')}>
               {repoUrl}
             </span>
+            <div className="ml-auto flex items-center gap-3">
+              <span
+                className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${
+                  isStale
+                    ? 'bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-200'
+                    : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-200'
+                }`}
+              >
+                {isStale ? <AlertTriangle className="h-3.5 w-3.5" /> : <CheckCircle2 className="h-3.5 w-3.5" />}
+                {isStale ? 'Out of sync' : 'Synchronized'}
+              </span>
+              <Button
+                variant="outline"
+                onClick={() => navigate('/analyzing', { state: { repoUrl, forceSync: true } })}
+                className="rounded-lg"
+              >
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Synchronize
+              </Button>
+            </div>
           {/* </div> */}
         </div>
       </div>
@@ -126,10 +158,26 @@ function ResultPage() {
                   </span>
                 )}
               </div>
+
+              {/* Analysis source banner */}
+              <div className={`mt-5 rounded-xl border px-4 py-3 text-xs ${
+                isStale
+                  ? 'border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-100'
+                  : 'border-emerald-200 bg-emerald-50 text-emerald-900 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-100'
+              }`}>
+                <div className="flex flex-col gap-1">
+                  <span className="font-semibold text-sm">{analysisSource}</span>
+                  <span>Last analyzed: {analyzedAtLabel}</span>
+                  {cache?.latestHeadHash && cache?.analyzedHeadHash && isStale && (
+                    <span className="break-all mt-1">Stored HEAD {cache.analyzedHeadHash.slice(0, 8)} is behind remote HEAD {cache.latestHeadHash.slice(0, 8)}.</span>
+                  )}
+                </div>
+              </div>
             </div>
           </aside>
 
           <section className="min-w-0 flex-1 px-4 pb-16 sm:px-6 lg:px-8">
+
             {/* Tabs */}
             <div className="sticky top-14 z-40 mb-8 border-b border-[var(--border)] bg-[var(--bg)] dark:border-[var(--surface3)] dark:bg-[var(--bg)]">
               <div className="flex ">
