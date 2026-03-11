@@ -51,6 +51,7 @@ function ChatPanel({ sessionId, repoName, projectCharacter, span, totalCommits, 
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
   const bottomRef = useRef(null)
+  const inputRef = useRef(null)
   const nextIdRef = useRef(1)
 
   useEffect(() => {
@@ -96,6 +97,7 @@ function ChatPanel({ sessionId, repoName, projectCharacter, span, totalCommits, 
     setInputValue('')
     setIsLoading(true)
     setError(null)
+    inputRef.current?.focus()
 
     try {
       const reply = await sendChatMessage(sessionId, userMessageText, history)
@@ -111,6 +113,7 @@ function ChatPanel({ sessionId, repoName, projectCharacter, span, totalCommits, 
       setError(normalizeChatError(requestError.message))
     } finally {
       setIsLoading(false)
+      inputRef.current?.focus()
     }
   }
 
@@ -271,6 +274,7 @@ function ChatPanel({ sessionId, repoName, projectCharacter, span, totalCommits, 
         <div className="border-t border-[var(--border)] px-5 py-4 dark:border-[var(--surface3)]">
           <div className="flex items-end gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface2)] px-4 py-3 focus-within:border-[var(--accent)] dark:border-[var(--surface3)] dark:bg-[var(--surface2)] dark:focus-within:border-[var(--accent)]">
             <textarea
+              ref={inputRef}
               value={inputValue}
               onChange={(event) => {
                 setInputValue(event.target.value)
@@ -286,7 +290,6 @@ function ChatPanel({ sessionId, repoName, projectCharacter, span, totalCommits, 
               rows={1}
               className="flex-1 resize-none bg-transparent text-sm text-[var(--text-primary)] outline-none placeholder:text-[var(--text-muted)] dark:text-[var(--text-primary)]"
               style={{ maxHeight: '120px', overflowY: 'auto' }}
-              disabled={isLoading}
             />
             <Button
               type="button"

@@ -298,7 +298,7 @@ function AnalyticsPanel({ data }) {
           {phaseRows.length === 0 ? (
             <p className="text-[var(--text-secondary)] dark:text-[var(--text-muted)]">No phase data available</p>
           ) : (
-            <div className="space-y-5">
+            <div className="max-h-[320px] overflow-y-auto pr-1 space-y-5 scrollbar-thin scrollbar-thumb-[var(--surface3)] scrollbar-track-transparent">
               {phaseRows.map((phase, index) => (
                 <div key={`${phase.label}-${index}`}>
                   <div className="mb-1 flex items-center justify-between text-sm">
@@ -337,29 +337,37 @@ function AnalyticsPanel({ data }) {
               {monthlyData[0]?.label} → {monthlyData[monthlyData.length - 1]?.label}
             </span>
           </div>
-          <div className="flex items-end gap-2" style={{ height: '120px' }}>
-            {monthlyData.map((month, index) => {
-              const pct = maxMonthly > 0 ? (month.commits / maxMonthly) * 100 : 0
-              const barColor = phasePalette[Math.min(Math.floor(index / 3), phasePalette.length - 1)]
-              return (
-                <div key={month.fullLabel} className="group relative flex flex-1 flex-col items-center justify-end gap-1">
+          <div className="overflow-x-auto pt-6 pb-6">
+            <div
+              className="flex items-end gap-1"
+              style={{ height: '90px', minWidth: `${Math.max(monthlyData.length * 26, 300)}px` }}
+            >
+              {monthlyData.map((month, index) => {
+                const heightPx = maxMonthly > 0 ? Math.max((month.commits / maxMonthly) * 86, 3) : 3
+                const barColor = phasePalette[Math.min(Math.floor(index / 3), phasePalette.length - 1)]
+                return (
                   <div
-                    className="w-full min-h-1 rounded-t-sm transition-all"
-                    style={{
-                      height: `${Math.max(pct, 3)}%`,
-                      background: `linear-gradient(to top, ${barColor.base}, ${barColor.soft})`,
-                    }}
-                    title={`${month.fullLabel}: ${month.commits} commits`}
-                  />
-                  <span className="text-[10px] text-[var(--text-secondary)] dark:text-[var(--text-muted)]">{month.label}</span>
-                  {month.commits > 0 && (
-                    <span className="absolute -top-5 text-[10px] font-medium text-[var(--text-secondary)] dark:text-[var(--text-muted)]">
-                      {month.commits}
+                    key={month.fullLabel}
+                    className="group relative flex-1"
+                    style={{ height: `${heightPx}px` }}
+                  >
+                    <div
+                      className="absolute inset-0 rounded-t-sm transition-all"
+                      style={{ background: `linear-gradient(to top, ${barColor.base}, ${barColor.soft})` }}
+                      title={`${month.fullLabel}: ${month.commits} commits`}
+                    />
+                    {month.commits > 0 && (
+                      <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 whitespace-nowrap text-[9px] font-medium text-[var(--text-secondary)] dark:text-[var(--text-muted)]">
+                        {month.commits}
+                      </span>
+                    )}
+                    <span className="absolute top-full left-1/2 -translate-x-1/2 mt-1 text-[9px] text-[var(--text-secondary)] dark:text-[var(--text-muted)]">
+                      {month.label}
                     </span>
-                  )}
-                </div>
-              )
-            })}
+                  </div>
+                )
+              })}
+            </div>
           </div>
         </section>
       )}

@@ -79,82 +79,79 @@ function ResultPage() {
             <ArrowLeft className="mr-2 h-4 w-4" />
             Analyze Another Repository
           </Button>
-          <div className="flex min-w-0 flex-1 items-center truncate rounded-lg border border-[var(--border)] bg-[var(--surface2)] px-4 py-2 dark:border-[var(--surface3)] dark:bg-[var(--surface2)]">
-            <span className="truncate text-sm text-[var(--text-secondary)] dark:text-[var(--text-muted)]">{repoUrl}</span>
-          </div>
+          {/* <div className="flex min-w-0 flex-1 items-center truncate rounded-lg border border-[var(--border)] bg-[var(--surface2)] px-4 py-2 dark:border-[var(--surface3)] dark:bg-[var(--surface2)]"> */}
+            <span className="truncate text-sm text-blue-600 cursor-pointer" onClick={() => window.open(repoUrl, '_blank')}>
+              {repoUrl}
+            </span>
+          {/* </div> */}
         </div>
       </div>
 
       {/* Main container — full width */}
-      <div className="w-full px-4 pb-16 sm:px-6 lg:px-8">
-        {/* Page Header */}
-        <div className="relative overflow-hidden rounded-3xl border border-[var(--border)] bg-[var(--surface)] px-6 pb-7 pt-10 shadow-[0_2px_16px_rgba(0,0,0,0.08)] dark:border-[var(--surface3)] dark:bg-[var(--surface)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
-
-          <div className="relative flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-            <div>
+      <div className="flex w-full gap-0">
+        <aside className="hidden lg:flex lg:flex-col lg:w-80 lg:shrink-0 lg:sticky lg:top-14 lg:h-[calc(100vh-3.5rem)] lg:overflow-y-auto px-4 pt-6 pb-8">
+            <div className="relative overflow-hidden rounded-3xl border border-[var(--border)] bg-[var(--surface)] px-6 pb-7 pt-8 shadow-[0_2px_16px_rgba(0,0,0,0.08)] dark:border-[var(--surface3)] dark:bg-[var(--surface)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
               <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-[var(--accent)]">Repository Story</p>
-              <h1 className="text-[42px] font-bold leading-none text-[var(--text-primary)] dark:text-[var(--text-primary)]">
+              <h1 className="text-[36px] font-bold leading-tight text-[var(--text-primary)] dark:text-[var(--text-primary)] break-words">
                 {repoShortName}
               </h1>
               <p className="mt-2 text-sm text-[var(--text-secondary)] dark:text-[var(--text-muted)]">AI-Generated Story of Your Codebase</p>
-              <div className="mt-4 flex flex-wrap gap-2">
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border)] bg-[var(--surface2)] px-3 py-1.5 text-sm text-[var(--text-primary)] dark:border-[var(--surface3)] dark:bg-[var(--surface3)] dark:text-[var(--text-primary)]">
+
+              <div className="mt-5 grid grid-cols-3 gap-2">
+                {[
+                  { value: totalCommits, label: 'COMMITS' },
+                  { value: totalContributors, label: 'AUTHORS' },
+                  { value: durationLabel, label: 'LIFESPAN' },
+                ].map(({ value, label }) => (
+                  <div key={label} className="rounded-lg border border-[var(--border)] bg-[var(--surface2)] px-3 py-3 text-center dark:border-[var(--surface3)] dark:bg-[var(--surface3)]">
+                    <p className="text-xl font-semibold leading-none text-[var(--text-primary)]">{value}</p>
+                    <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">{label}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-5 flex flex-col gap-2">
+                <span className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface2)] px-3 py-1.5 text-sm text-[var(--text-primary)] dark:border-[var(--surface3)] dark:bg-[var(--surface3)] dark:text-[var(--text-primary)]">
                   <GitCommit className="h-3.5 w-3.5 text-[var(--accent)]" />
                   {totalCommits} Commits
                 </span>
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border)] bg-[var(--surface2)] px-3 py-1.5 text-sm text-[var(--text-primary)] dark:border-[var(--surface3)] dark:bg-[var(--surface3)] dark:text-[var(--text-primary)]">
+                <span className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface2)] px-3 py-1.5 text-sm text-[var(--text-primary)] dark:border-[var(--surface3)] dark:bg-[var(--surface3)] dark:text-[var(--text-primary)]">
                   <Users className="h-3.5 w-3.5 text-[var(--accent)]" />
                   {totalContributors} Contributors
                 </span>
                 {dateRangeLabel && (
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border)] bg-[var(--surface2)] px-3 py-1.5 text-sm text-[var(--text-primary)] dark:border-[var(--surface3)] dark:bg-[var(--surface3)] dark:text-[var(--text-primary)]">
+                  <span className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface2)] px-3 py-1.5 text-sm text-[var(--text-primary)] dark:border-[var(--surface3)] dark:bg-[var(--surface3)] dark:text-[var(--text-primary)]">
                     <Calendar className="h-3.5 w-3.5 text-[var(--accent)]" />
                     {dateRangeLabel}
                   </span>
                 )}
               </div>
             </div>
+          </aside>
 
-            {/* Stats Box */}
-            <div className="flex shrink-0 divide-x divide-[var(--border)] overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface)]/90 backdrop-blur-sm dark:divide-[var(--surface3)] dark:border-[var(--surface3)] dark:bg-gradient-to-r dark:from-[#13172a] dark:via-[#171a2f] dark:to-[#13172a]">
-              {[
-                { value: totalCommits, label: 'COMMITS' },
-                { value: totalContributors, label: 'AUTHORS' },
-                { value: durationLabel, label: 'LIFESPAN' },
-              ].map(({ value, label }) => (
-                <div key={label} className="flex min-w-30 flex-col items-center px-6 py-5 sm:px-8">
-                  <span className="text-[38px] font-bold leading-none text-[var(--text-primary)] dark:text-[var(--text-primary)]">{value}</span>
-                  <span className="mt-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--text-secondary)] dark:text-[var(--text-muted)]">
-                    {label}
-                  </span>
-                </div>
-              ))}
+          <section className="min-w-0 flex-1 px-4 pb-16 sm:px-6 lg:px-8">
+            {/* Tabs */}
+            <div className="sticky top-14 z-40 mb-8 border-b border-[var(--border)] bg-[var(--bg)] dark:border-[var(--surface3)] dark:bg-[var(--bg)]">
+              <div className="flex ">
+                {tabs.map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`flex items-center gap-2 whitespace-nowrap rounded-t-lg px-4 py-3 text-sm font-medium transition border-b-2 -mb-[2px] ${
+                      activeTab === tab.id
+                        ? 'border-[var(--accent)] bg-[#f0f3ff] text-[#2f266d] dark:bg-[var(--surface2)] dark:text-[var(--text-primary)]'
+                        : 'border-transparent text-[var(--text-secondary)] hover:bg-[var(--surface)] hover:text-[var(--text-primary)] dark:text-[var(--text-muted)] dark:hover:bg-[var(--surface3)] dark:hover:text-[var(--text-secondary)]'
+                    }`}
+                  >
+                    <tab.icon className="h-4 w-4" />
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
-        </div>
 
-        {/* Tabs */}
-        <div className="sticky top-14 z-40 mb-8 mt-6 border-b border-[var(--border)] bg-[var(--bg)] dark:border-[var(--surface3)] dark:bg-[var(--bg)]">
-          <div className="flex overflow-x-auto">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 whitespace-nowrap rounded-t-lg px-4 py-3 text-sm font-medium transition border-b-2 -mb-[2px] ${
-                  activeTab === tab.id
-                    ? 'border-[var(--accent)] bg-[#f0f3ff] text-[#2f266d] dark:bg-[var(--surface2)] dark:text-[var(--text-primary)]'
-                    : 'border-transparent text-[var(--text-secondary)] hover:bg-[var(--surface)] hover:text-[var(--text-primary)] dark:text-[var(--text-muted)] dark:hover:bg-[var(--surface3)] dark:hover:text-[var(--text-secondary)]'
-                }`}
-              >
-                <tab.icon className="h-4 w-4" />
-                {tab.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Tab Content */}
-        <div>
+            {/* Tab Content */}
+            <div>
           {activeTab === 'narrative' && (
             <NarrativePanel
               narrative={narrative}
@@ -184,8 +181,9 @@ function ResultPage() {
             )
           )}
           {activeTab === 'analytics' && <AnalyticsPanel data={data} />}
+            </div>
+          </section>
         </div>
-      </div>
     </div>
   )
 }

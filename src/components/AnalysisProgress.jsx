@@ -43,63 +43,66 @@ function AnalysisProgress({ progress }) {
   const progressPercent = getPercent(progress)
 
   return (
-    <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 text-[var(--text-primary)] shadow-[0_1px_3px_rgba(0,0,0,0.4)]">
+    <div className="rounded-3xl border border-[var(--border-bright)] bg-[rgba(15,17,28,0.95)] p-6 text-[var(--text-primary)] shadow-[0_16px_40px_rgba(0,0,0,0.35)] sm:p-7">
       <div className="mb-6 flex items-start justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-semibold text-[var(--text-primary)]">Analyzing Repository</h2>
+          <h2 className="text-[44px] leading-[1.05] font-medium text-[var(--text-primary)]">Analyzing Repository</h2>
           <p className="mt-2 text-[14px] text-[var(--text-secondary)]">
             {progress?.message || 'Preparing analysis...'}
           </p>
           {currentStep === 'phase' && progress?.current && progress?.total && (
-            <p className="mt-1 text-[14px] text-[var(--text-muted)]">
+            <p className="mt-1 font-mono text-[12px] uppercase tracking-[0.08em] text-[var(--text-muted)]">
               Analyzing phase {progress.current} / {progress.total}
             </p>
           )}
         </div>
 
-        <div
-          className="shrink-0 text-[13px] font-semibold text-[var(--accent)]"
-          style={{ fontFamily: 'JetBrains Mono, monospace' }}
-        >
+        <div className="shrink-0 rounded-full border border-[var(--border-bright)] bg-[var(--surface2)] px-3 py-1 font-mono text-[13px] font-semibold text-[var(--accent)]">
           {progressPercent}%
         </div>
       </div>
 
-      <div className="mb-6 overflow-x-auto pb-2">
-        <div className="flex min-w-max items-center gap-3">
+      <div className="mb-7">
+        <div className="mb-2 flex items-center justify-between">
+          <span className="font-mono text-[12px] uppercase tracking-[0.12em] text-[var(--text-muted)]">Progress</span>
+          <span className="font-mono text-[12px] text-[var(--text-muted)]">{progressPercent}%</span>
+        </div>
+        <div className="h-[6px] w-full overflow-hidden rounded-full bg-[rgba(255,255,255,0.08)]">
+          <div
+            className="h-full rounded-full bg-[var(--accent)] transition-[width] duration-400 ease-[ease]"
+            style={{ width: `${progressPercent}%` }}
+          />
+        </div>
+      </div>
+
+      <div className="mb-2 overflow-x-auto overflow-y-visible py-3">
+        <div className="flex min-w-max items-start gap-5">
           {STEP_ORDER.map((step, index) => {
             const isCompleted = currentStepIndex > index || currentStep === 'complete'
             const isCurrent = currentStepIndex === index && currentStep !== 'complete'
 
             return (
-              <div key={step} className="flex items-center gap-3">
+              <div key={step} className="flex items-center gap-4">
                 <div className="flex flex-col items-center gap-2">
-                  <div className="relative flex h-8 w-8 items-center justify-center">
-                    {isCurrent && <span className="absolute h-8 w-8 rounded-full border border-[var(--accent)] animate-ping" />}
+                  <div className="relative flex h-9 w-9 items-center justify-center">
+                    {isCurrent && <span className="absolute -inset-1 rounded-full border border-[var(--accent)] opacity-70 animate-ping" />}
                     <span
                       className={`relative h-4 w-4 rounded-full border ${
                         isCompleted
-                          ? 'border-[var(--accent)] bg-[var(--accent)]'
+                          ? 'border-[var(--green)] bg-[var(--green)]'
                           : isCurrent
-                            ? 'border-[var(--accent)] bg-[var(--surface)]'
+                            ? 'border-[var(--accent)] bg-[var(--surface)] shadow-[0_0_0_4px_rgba(124,106,247,0.18)]'
                             : 'border-[var(--border)] bg-transparent'
                       }`}
                     />
                   </div>
-                  <span className="text-xs text-[var(--text-muted)]">{STEP_LABELS[step]}</span>
+                  <span className={`text-xs ${isCurrent ? 'text-[var(--text-primary)]' : 'text-[var(--text-muted)]'}`}>{STEP_LABELS[step]}</span>
                 </div>
-                {index < STEP_ORDER.length - 1 && <div className="h-px w-8 bg-[var(--border)]" />}
+                {index < STEP_ORDER.length - 1 && <div className="h-px w-10 bg-[var(--border)]" />}
               </div>
             )
           })}
         </div>
-      </div>
-
-      <div className="h-[6px] w-full overflow-hidden rounded-full border border-[var(--border)] bg-[var(--surface)]">
-        <div
-          className="h-full rounded-full bg-[var(--accent)] transition-[width] duration-400 ease-[ease]"
-          style={{ width: `${progressPercent}%` }}
-        />
       </div>
     </div>
   )
