@@ -4,10 +4,94 @@ function toNumber(value) {
   return typeof value === 'number' && Number.isFinite(value) ? value : 0
 }
 
+function isPlainObject(value) {
+  return value !== null && typeof value === 'object' && !Array.isArray(value)
+}
+
+function getValueType(value) {
+  if (Array.isArray(value)) return 'array'
+  if (value === null) return 'null'
+  return typeof value
+}
+
+function formatPrimitive(value) {
+  if (value === null) return 'null'
+  if (value === undefined) return 'undefined'
+  if (typeof value === 'boolean') return value ? 'true' : 'false'
+  if (typeof value === 'number') return Number.isFinite(value) ? value.toLocaleString() : String(value)
+  if (typeof value === 'string') return value || '(empty string)'
+  return String(value)
+}
+
 function formatCategoryLabel(key) {
   return String(key || '')
     .replace(/_/g, ' ')
     .replace(/\b\w/g, (ch) => ch.toUpperCase())
+}
+
+function DataNode({ value, depth = 0 }) {
+  if (Array.isArray(value)) {
+    if (value.length === 0) {
+      return <span className="text-xs text-[var(--text-secondary)] dark:text-[var(--text-muted)]">[]</span>
+    }
+
+    const primitiveArray = value.every((item) => !Array.isArray(item) && !isPlainObject(item))
+
+    if (primitiveArray) {
+      return (
+        <ul className="space-y-1.5">
+          {value.map((item, index) => (
+            <li key={index} className="rounded-md border border-[var(--border)] bg-[var(--surface2)] px-2.5 py-1.5 text-xs text-[var(--text-secondary)] dark:border-[var(--surface3)] dark:bg-[var(--surface3)] dark:text-[var(--text-secondary)]">
+              {formatPrimitive(item)}
+            </li>
+          ))}
+        </ul>
+      )
+    }
+
+    return (
+      <details className="rounded-md border border-[var(--border)] bg-[var(--surface2)] p-2.5 dark:border-[var(--surface3)] dark:bg-[var(--surface3)]">
+        <summary className="cursor-pointer text-xs font-medium text-[var(--text-primary)] dark:text-[var(--text-primary)]">
+          {value.length} item{value.length === 1 ? '' : 's'}
+        </summary>
+        <div className="mt-2 space-y-2">
+          {value.map((item, index) => (
+            <div key={index} className="rounded-md border border-[var(--border)] bg-[var(--surface)] p-2 dark:border-[var(--border)] dark:bg-[var(--surface2)]">
+              <p className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-[var(--text-secondary)] dark:text-[var(--text-muted)]">
+                Item {index + 1}
+              </p>
+              <DataNode value={item} depth={depth + 1} />
+            </div>
+          ))}
+        </div>
+      </details>
+    )
+  }
+
+  if (isPlainObject(value)) {
+    const entries = Object.entries(value)
+    if (entries.length === 0) {
+      return <span className="text-xs text-[var(--text-secondary)] dark:text-[var(--text-muted)]">{'{}'}</span>
+    }
+
+    return (
+      <div className="space-y-2">
+        {entries.map(([key, nestedValue]) => (
+          <div
+            key={`${depth}-${key}`}
+            className="rounded-md border border-[var(--border)] bg-[var(--surface2)] p-2.5 dark:border-[var(--surface3)] dark:bg-[var(--surface3)]"
+          >
+            <p className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-[var(--text-secondary)] dark:text-[var(--text-muted)]">
+              {formatCategoryLabel(key)}
+            </p>
+            <DataNode value={nestedValue} depth={depth + 1} />
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+  return <span className="text-sm text-[var(--text-primary)] dark:text-[var(--text-primary)]">{formatPrimitive(value)}</span>
 }
 
 function computeMonthlyActivity(phases) {
@@ -70,6 +154,8 @@ function AnalyticsPanel({ data }) {
   if (!data) {
     return <div className="text-[var(--text-secondary)] dark:text-[var(--text-muted)]">No analytics data available</div>
   }
+
+  const responseEntries = Object.entries(data)
 
   const phases = Array.isArray(data.phases) ? data.phases : []
   const milestones = Array.isArray(data.milestones) ? data.milestones : []
@@ -661,6 +747,51 @@ function AnalyticsPanel({ data }) {
           </div>
         </section>
       </div>
+
+      {/* Full Response Field Explorer */}
+      <section className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[0_1px_3px_rgba(0,0,0,0.08)] dark:border-[var(--surface3)] dark:bg-[var(--surface)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.5)]">
+        <div className="mb-5 flex items-center justify-between">
+          <h2 className="text-base font-semibold text-[var(--text-primary)] dark:text-[var(--text-primary)]">API Response Field Explorer</h2>
+          <span className="rounded-md border border-[var(--border)] bg-[var(--surface2)] px-2 py-0.5 text-xs text-[var(--text-secondary)] dark:border-[var(--surface3)] dark:bg-[var(--surface3)] dark:text-[var(--text-muted)]">
+            {responseEntries.length} top-level fields
+          </span>
+        </div>
+
+        <p className="mb-4 text-xs text-[var(--text-secondary)] dark:text-[var(--text-muted)]">
+          Expand each section to inspect all nested fields from the backend payload, including arrays and object structures.
+        </p>
+
+        <div className="grid gap-3 lg:grid-cols-2">
+          {responseEntries.map(([key, value]) => {
+            const type = getValueType(value)
+            const itemCount = Array.isArray(value)
+              ? value.length
+              : isPlainObject(value)
+                ? Object.keys(value).length
+                : null
+
+            return (
+              <details
+                key={key}
+                className="rounded-lg border border-[var(--border)] bg-[var(--surface2)] p-3 dark:border-[var(--surface3)] dark:bg-[var(--surface3)]"
+              >
+                <summary className="flex cursor-pointer items-center justify-between gap-2">
+                  <span className="text-sm font-semibold text-[var(--text-primary)] dark:text-[var(--text-primary)]">
+                    {formatCategoryLabel(key)}
+                  </span>
+                  <span className="rounded border border-[var(--border)] bg-[var(--surface)] px-2 py-0.5 text-[11px] text-[var(--text-secondary)] dark:border-[var(--border)] dark:bg-[var(--surface2)] dark:text-[var(--text-muted)]">
+                    {type}
+                    {itemCount !== null ? ` (${itemCount})` : ''}
+                  </span>
+                </summary>
+                <div className="mt-3">
+                  <DataNode value={value} depth={0} />
+                </div>
+              </details>
+            )
+          })}
+        </div>
+      </section>
     </div>
   )
 }
